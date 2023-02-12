@@ -17,13 +17,43 @@ namespace PROJECT_A11.Develops.Common
     {
 
         private PawnControllerType m_Controller;
-        public PawnControllerType controller { get { return m_Controller; } }
+        public PawnControllerType controller
+        {
+            get
+            {
+
+                if (m_Controller == null)
+                    m_Controller = GetComponent<PawnControllerType>();
+
+                return m_Controller;
+            }
+        }
 
         private PawnFSMType m_FSM;
-        public PawnFSMType FSM { get { return m_FSM; } }
+        public PawnFSMType FSM
+        {
+            get
+            {
+
+                if (m_FSM == null)
+                    m_FSM = GetComponent<PawnFSMType>();
+
+                return m_FSM;
+            }
+        }
 
         private PawnBrainType m_Brain;
-        public PawnBrainType brain { get { return m_Brain; } }
+        public PawnBrainType brain
+        {
+            get
+            {
+
+                if (m_Brain == null)
+                    m_Brain = GetComponent<PawnBrainType>();
+
+                return m_Brain;
+            }
+        }
 
 
 

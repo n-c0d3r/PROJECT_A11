@@ -39,8 +39,8 @@ namespace PROJECT_A11.Develops.Common
 
         [ReadOnly]
         [SerializeField]
-        private bool m_IsGrounding = false;
-        public bool isGrounding { get { return m_IsGrounding; } }
+        private bool m_IsGrounded = false;
+        public bool isGrounded { get { return m_IsGrounded; } }
 
 
 
@@ -72,14 +72,14 @@ namespace PROJECT_A11.Develops.Common
             {
 
                 m_CheckedPosition = hit.point;
-                m_IsGrounding = true;
+                m_IsGrounded = true;
 
             }
             else
             {
 
                 m_CheckedPosition = transform.position + offset;
-                m_IsGrounding = false;
+                m_IsGrounded = false;
 
             }
 
@@ -95,7 +95,7 @@ namespace PROJECT_A11.Develops.Common
             Gizmos.color = endSphereColor;
             Gizmos.DrawWireSphere(transform.position + offset + maxDistance * direction, radius);
 
-            if (!m_IsGrounding) return;
+            if (!m_IsGrounded) return;
 
             Gizmos.color = checkedSphereColor;
             Gizmos.DrawWireSphere(m_CheckedPosition, checkedSphereRadius);

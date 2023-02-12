@@ -12,13 +12,13 @@ namespace PROJECT_A11.Develops.Common
         PawnBrain<Person, PersonController>
     {
 
-        public virtual void OnStartGrounding()
+        public virtual void OnStartGrounded()
         {
 
 
 
         }
-        public virtual void OnEndGrounding()
+        public virtual void OnEndGrounded()
         {
 
 

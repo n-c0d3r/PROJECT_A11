@@ -23,10 +23,30 @@ namespace PROJECT_A11.Develops.Common
     {
 
         private Rigidbody m_Rigidbody;
-        public Rigidbody rigidbody { get { return m_Rigidbody; } }
+        public Rigidbody rigidbody
+        {
+            get
+            {
+
+                if (m_Rigidbody == null)
+                    m_Rigidbody = GetComponent<Rigidbody>();
+
+                return m_Rigidbody;
+            }
+        }
 
         private CapsuleCollider m_CapsuleCollider;
-        public CapsuleCollider capsuleCollider { get { return m_CapsuleCollider; } }
+        public CapsuleCollider capsuleCollider
+        {
+            get
+            {
+
+                if (m_CapsuleCollider == null)
+                    m_CapsuleCollider = GetComponent<CapsuleCollider>();
+
+                return m_CapsuleCollider;
+            }
+        }
 
 
 

@@ -68,8 +68,10 @@ namespace PROJECT_A11.Develops.Common
         public float startWalkingTime = 1.0f;
         public float startCrouchingTime = 0.5f;
 
-        public float moveDirUpdatingSpeed = 5.0f;
-        public float speedUpdatingSpeed = 10.0f;
+        public float groundedMoveDirUpdatingSpeed = 5.0f;
+        public float inAirMoveDirUpdatingSpeed = 5.0f;
+        public float groundedSpeedUpdatingSpeed = 10.0f;
+        public float inAirSpeedUpdatingSpeed = 10.0f;
 
         public float jumpStartVelocity = 4.0f;
         public float startJumpingTime = 0.5f;
@@ -104,13 +106,13 @@ namespace PROJECT_A11.Develops.Common
 
         [ReadOnly]
         [SerializeField]
-        private float m_Speed = 0;
+        private float m_TargetSpeed = 0;
         [ReadOnly]
         [SerializeField]
-        private Vector3 m_MoveDirection = new Vector3(0, 0, 0);
+        private Vector3 m_TargetMoveDirection = new Vector3(0, 0, 0);
         [ReadOnly]
         [SerializeField]
-        private Vector3 m_Velocity;
+        private Vector3 m_TargetVelocity;
 
         private Vector3 m_StartPosition;
         private Vector3 m_StopPosition;
@@ -169,7 +171,7 @@ namespace PROJECT_A11.Develops.Common
 
                 float speedRatio = speedCurve.Evaluate(Mathf.InverseLerp(0.0f, startMovingTime, m_MovingTime));
 
-                m_Speed = maxSpeed * speedRatio;
+                m_TargetSpeed = maxSpeed * speedRatio;
 
                 if (speedRatio >= 0.98f)
                 {
@@ -182,15 +184,15 @@ namespace PROJECT_A11.Develops.Common
 
                 }
 
-                m_Velocity = m_Speed * m_MoveDirection;
+                m_TargetVelocity = m_TargetSpeed * m_TargetMoveDirection;
 
             }
             else
             {
 
-                m_Speed = 0.0f;
-                m_Velocity = new Vector3(0, 0, 0);
-                m_MoveDirection = new Vector3(0, 0, 0);
+                m_TargetSpeed = 0.0f;
+                m_TargetVelocity = new Vector3(0, 0, 0);
+                m_TargetMoveDirection = new Vector3(0, 0, 0);
 
             }
 
@@ -240,7 +242,7 @@ namespace PROJECT_A11.Develops.Common
             transform.Rotate(lookSensitivity * m_RotatingInput.x * Vector3.up);
             headTransform.Rotate(-lookSensitivity * m_RotatingInput.y * Vector3.right);
 
-            m_MoveDirection = transform.forward * m_MovingInput.y + transform.right * m_MovingInput.x;
+            m_TargetMoveDirection = transform.forward * m_MovingInput.y + transform.right * m_MovingInput.x;
 
         }
 
@@ -249,12 +251,12 @@ namespace PROJECT_A11.Develops.Common
 
             Vector3 currVel = pawn.rigidbody.velocity;
             currVel.y = 0;
-            Vector3 targetVel = m_Velocity;
+            Vector3 targetVel = m_TargetVelocity;
 
             Vector3 currDir = currVel.normalized;
             Vector3 targetDir = targetVel.normalized;
 
-            bool isBraking = (m_Speed == 0.0f) || (Vector3.Dot(currDir, targetDir) < 0.0f);
+            bool isBraking = ((m_TargetSpeed == 0.0f) || (Vector3.Dot(currDir, targetDir) < -0.25f)) && groundChecker.isGrounded;
 
             float currSpeed = currVel.magnitude;
             float targetSpeed = targetVel.magnitude;
@@ -266,7 +268,21 @@ namespace PROJECT_A11.Develops.Common
 
             }
 
-            Vector3 nextDir = Vector3.Lerp(currDir, targetDir, Time.fixedDeltaTime * moveDirUpdatingSpeed);
+            float moveDirUpdatingSpeed = groundedMoveDirUpdatingSpeed;
+            float speedUpdatingSpeed = groundedSpeedUpdatingSpeed;
+
+            if (!groundChecker.isGrounded)
+            {
+
+                moveDirUpdatingSpeed = inAirMoveDirUpdatingSpeed;
+                speedUpdatingSpeed = inAirSpeedUpdatingSpeed;
+
+            }
+
+            Vector3 nextDir = Vector3.Lerp(currDir, targetDir, 
+                Time.fixedDeltaTime * moveDirUpdatingSpeed
+            );
+
             float nextSpeed = Mathf.Lerp(currSpeed, targetSpeed, Time.fixedDeltaTime * speedUpdatingSpeed);
 
             Vector3 nextVel = nextDir * nextSpeed;
@@ -333,7 +349,7 @@ namespace PROJECT_A11.Develops.Common
         {
 
             if (m_MovementInputState.isJumping) return;
-            if (m_GroundChecker.isGrounding) return;
+            if (m_GroundChecker.isGrounded) return;
 
             Vector3 currVel = pawn.rigidbody.velocity;
 
@@ -349,7 +365,7 @@ namespace PROJECT_A11.Develops.Common
 
             if (
                 m_MovementState != MovementState.StartJumping
-                && m_GroundChecker.isGrounding
+                && m_GroundChecker.isGrounded
             )
             {
 
@@ -380,42 +396,42 @@ namespace PROJECT_A11.Develops.Common
 
 
 
-        protected virtual void OnStartGrounding()
+        protected virtual void OnStartGrounded()
         {
                  
-            m_Brain.OnStartGrounding();
+            m_Brain.OnStartGrounded();
 
         }
-        protected virtual void OnEndGrounding()
+        protected virtual void OnEndGrounded()
         {
 
-            m_Brain.OnEndGrounding();
+            m_Brain.OnEndGrounded();
 
         }
 
         private bool m_LastIsGround = false;
-        private void UpdateGrounding()
+        private void UpdateGrounded()
         {
 
-            if (m_LastIsGround != m_GroundChecker.isGrounding)
+            if (m_LastIsGround != m_GroundChecker.isGrounded)
             {
 
                 if (m_LastIsGround)
                 {
 
-                    OnEndGrounding();
+                    OnEndGrounded();
 
                 }
                 else
                 {
 
-                    OnStartGrounding();
+                    OnStartGrounded();
 
                 }
 
             }
 
-            m_LastIsGround = m_GroundChecker.isGrounding;
+            m_LastIsGround = m_GroundChecker.isGrounded;
 
         }
 
@@ -428,7 +444,7 @@ namespace PROJECT_A11.Develops.Common
 
             m_MovingInput = input;
 
-            m_MoveDirection = transform.forward * input.y + transform.right * input.x;
+            m_TargetMoveDirection = transform.forward * input.y + transform.right * input.x;
 
             if(
                 m_MovementState != MovementState.InAirUp
@@ -446,7 +462,7 @@ namespace PROJECT_A11.Develops.Common
 
             m_MovingInput = input;
 
-            m_MoveDirection = transform.forward * input.y + transform.right * input.x;
+            m_TargetMoveDirection = transform.forward * input.y + transform.right * input.x;
 
             m_Brain.OnMoving(input);
 
@@ -462,7 +478,7 @@ namespace PROJECT_A11.Develops.Common
 
             m_MovingInput = input;
 
-            m_MoveDirection = Vector3.zero;
+            m_TargetMoveDirection = Vector3.zero;
 
             if (
                 m_MovementState != MovementState.InAirUp
@@ -555,7 +571,7 @@ namespace PROJECT_A11.Develops.Common
         {
 
             if (
-                !m_GroundChecker.isGrounding
+                !m_GroundChecker.isGrounded
                 || (m_MovementInputState.isJumping && m_JumpingTime > 0.0f)
             )
                 return;
@@ -608,7 +624,7 @@ namespace PROJECT_A11.Develops.Common
         protected virtual void FixedUpdate()
         {
 
-            UpdateGrounding();
+            UpdateGrounded();
             UpdatePawn();
 
         }
@@ -619,7 +635,8 @@ namespace PROJECT_A11.Develops.Common
         protected virtual void OnDrawGizmos()
         {
 
-            Debug.DrawLine(transform.position, transform.position + m_MoveDirection * 2.0f, moveDirectionLineColor);
+            Debug.DrawLine(transform.position, transform.position + m_TargetMoveDirection * 2.0f, moveDirectionLineColor);
+            Debug.DrawLine(transform.position, transform.position + pawn.rigidbody.velocity.normalized * 2.0f, moveDirectionLineColor);
 
         }
 #endif
