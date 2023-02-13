@@ -87,7 +87,8 @@ namespace PROJECT_A11.Develops.Common
 #if UNITY_EDITOR
         [Space(10)]
         [Header("Debug Settings")]
-        public Color moveDirectionLineColor = Color.magenta;
+        public Color targetMoveDirectionLineColor = Color.magenta;
+        public Color currentMoveDirectionLineColor = Color.yellow;
 #endif
 
 
@@ -635,8 +636,8 @@ namespace PROJECT_A11.Develops.Common
         protected virtual void OnDrawGizmos()
         {
 
-            Debug.DrawLine(transform.position, transform.position + m_TargetMoveDirection * 2.0f, moveDirectionLineColor);
-            Debug.DrawLine(transform.position, transform.position + pawn.rigidbody.velocity.normalized * 2.0f, moveDirectionLineColor);
+            Debug.DrawLine(transform.position, transform.position + m_TargetMoveDirection * 2.0f, targetMoveDirectionLineColor);
+            Debug.DrawLine(transform.position, transform.position + pawn.rigidbody.velocity.normalized * 2.0f, currentMoveDirectionLineColor);
 
         }
 #endif

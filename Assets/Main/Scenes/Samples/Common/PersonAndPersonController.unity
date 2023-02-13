@@ -456,7 +456,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 328335166}
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -11.35, y: 3.07, z: -3.59}
+  m_LocalPosition: {x: -6.51, y: 1.61, z: -3.59}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -523,9 +523,9 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0.5
-      inSlope: 0.5
-      outSlope: 0.5
+      value: 0.75
+      inSlope: 0.25
+      outSlope: 0.25
       tangentMode: 34
       weightedMode: 0
       inWeight: 0
@@ -533,8 +533,8 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 0.5
-      outSlope: 0.5
+      inSlope: 0.25
+      outSlope: 0.25
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
@@ -545,11 +545,11 @@ MonoBehaviour:
   maxRunningSpeed: 6
   maxWalkingSpeed: 4.5
   maxCrouchingSpeed: 3
-  startRunningTime: 0.5
-  startWalkingTime: 0.35
+  startRunningTime: 0.6
+  startWalkingTime: 0.4
   startCrouchingTime: 0.2
-  groundedMoveDirUpdatingSpeed: 50
-  inAirMoveDirUpdatingSpeed: 20
+  groundedMoveDirUpdatingSpeed: 10
+  inAirMoveDirUpdatingSpeed: 30
   groundedSpeedUpdatingSpeed: 20
   inAirSpeedUpdatingSpeed: 10
   jumpStartVelocity: 4.5
@@ -558,7 +558,8 @@ MonoBehaviour:
   bhopStrength: 1.25
   lookSensitivity: 0.03
   headTransform: {fileID: 1493483229}
-  moveDirectionLineColor: {r: 1, g: 0, b: 1, a: 1}
+  targetMoveDirectionLineColor: {r: 1, g: 0, b: 1, a: 1}
+  currentMoveDirectionLineColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   m_MovementInputState:
     isMoving: 0
     isWalking: 0
@@ -566,9 +567,9 @@ MonoBehaviour:
     isJumping: 0
   m_MoveMode: 0
   m_MovementState: 0
-  m_Speed: 0
-  m_MoveDirection: {x: 0, y: 0, z: 0}
-  m_Velocity: {x: 0, y: 0, z: 0}
+  m_TargetSpeed: 0
+  m_TargetMoveDirection: {x: 0, y: 0, z: 0}
+  m_TargetVelocity: {x: 0, y: 0, z: 0}
 --- !u!114 &328335172
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -824,8 +825,8 @@ MonoBehaviour:
   endSphereColor: {r: 0, g: 1, b: 0, a: 1}
   checkedSphereColor: {r: 0, g: 0.84315085, b: 1, a: 1}
   checkedSphereRadius: 0.1
-  m_CheckedPosition: {x: -11.35, y: 2.59, z: -3.59}
-  m_IsGrounded: 0
+  m_CheckedPosition: {x: -6.2969694, y: 0.67606264, z: -3.5900002}
+  m_IsGrounded: 1
 --- !u!1 &570076867
 GameObject:
   m_ObjectHideFlags: 0
@@ -909,7 +910,7 @@ MeshCollider:
   serializedVersion: 4
   m_Convex: 0
   m_CookingOptions: 30
-  m_Mesh: {fileID: 1790415556}
+  m_Mesh: {fileID: 2119211031}
 --- !u!33 &616794000
 MeshFilter:
   m_ObjectHideFlags: 10
@@ -917,7 +918,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 616793998}
-  m_Mesh: {fileID: 1790415556}
+  m_Mesh: {fileID: 2119211031}
 --- !u!23 &616794001
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1144,8 +1145,8 @@ MonoBehaviour:
     m_AreaError: 15
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
-  m_Mesh: {fileID: 1790415556}
-  m_VersionIndex: 1257
+  m_Mesh: {fileID: 2119211031}
+  m_VersionIndex: 1260
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -2684,13 +2685,13 @@ Mesh:
     offset: 0
     size: 0
     path: 
---- !u!43 &1790415556
+--- !u!43 &2119211031
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh28852
+  m_Name: pb_Mesh28858
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
