@@ -25,31 +25,25 @@ namespace PROJECT_A11.Develops.Common
 
         }
 
-        public virtual void OnStartMoving(Vector3 input)
+        public virtual void OnStartGroundedMoving(Vector2 input)
         {
 
 
 
         }
-        public virtual void OnMoving(Vector3 input)
+        public virtual void OnStopGroundedMoving()
         {
 
 
 
         }
-        public virtual void OnStopMoving(Vector3 input)
+        public virtual void OnStartOrdinaryBody()
         {
 
 
 
         }
-        public virtual void OnStartWalking()
-        {
-
-
-
-        }
-        public virtual void OnStopWalking()
+        public virtual void OnStopOrdinaryBody()
         {
 
 
@@ -68,6 +62,24 @@ namespace PROJECT_A11.Develops.Common
 
         }
 
+        public virtual void OnStartStrafing(Vector2 input)
+        {
+
+
+
+        }
+        public virtual void OnStrafing(Vector2 input)
+        {
+
+
+
+        }
+        public virtual void OnStopStrafing()
+        {
+
+
+
+        }
         public virtual void OnStartJumping()
         {
 

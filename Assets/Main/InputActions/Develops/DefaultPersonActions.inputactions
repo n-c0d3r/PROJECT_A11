@@ -1,14 +1,23 @@
 {
-    "name": "SamplePersonInputActions",
+    "name": "DefaultPersonActions",
     "maps": [
         {
             "name": "Player",
             "id": "e0450b56-a8d9-409a-9b21-84f335319ce2",
             "actions": [
                 {
-                    "name": "Move",
+                    "name": "GroundedOrdinaryMove",
                     "type": "Value",
                     "id": "b6285814-3460-4b4e-a799-af22661caa71",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Strafe",
+                    "type": "Value",
+                    "id": "f1f18ed7-9a6d-4795-90e9-52ac008223fd",
                     "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
@@ -33,7 +42,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Walk",
+                    "name": "OrdinaryBody",
                     "type": "Button",
                     "id": "3b35bb67-8618-4dd0-8d77-7febb7da2c49",
                     "expectedControlType": "Button",
@@ -68,7 +77,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
-                    "action": "Move",
+                    "action": "GroundedOrdinaryMove",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -79,7 +88,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move",
+                    "action": "GroundedOrdinaryMove",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
@@ -90,7 +99,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
-                    "action": "Move",
+                    "action": "GroundedOrdinaryMove",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -101,7 +110,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
-                    "action": "Move",
+                    "action": "GroundedOrdinaryMove",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -112,7 +121,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
-                    "action": "Move",
+                    "action": "GroundedOrdinaryMove",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -123,7 +132,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
-                    "action": "Move",
+                    "action": "GroundedOrdinaryMove",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -134,7 +143,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
-                    "action": "Move",
+                    "action": "GroundedOrdinaryMove",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -145,7 +154,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
-                    "action": "Move",
+                    "action": "GroundedOrdinaryMove",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -156,7 +165,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
-                    "action": "Move",
+                    "action": "GroundedOrdinaryMove",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -167,7 +176,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
-                    "action": "Move",
+                    "action": "GroundedOrdinaryMove",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -178,7 +187,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "XR",
-                    "action": "Move",
+                    "action": "GroundedOrdinaryMove",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -189,7 +198,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Joystick",
-                    "action": "Move",
+                    "action": "GroundedOrdinaryMove",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -288,7 +297,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
-                    "action": "Walk",
+                    "action": "OrdinaryBody",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -299,7 +308,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "Walk",
+                    "action": "OrdinaryBody",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -310,7 +319,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Touch",
-                    "action": "Walk",
+                    "action": "OrdinaryBody",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -321,7 +330,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Joystick",
-                    "action": "Walk",
+                    "action": "OrdinaryBody",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -332,7 +341,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "XR",
-                    "action": "Walk",
+                    "action": "OrdinaryBody",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -443,6 +452,138 @@
                     "processors": "",
                     "groups": "XR",
                     "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "bdc7b547-91fb-4293-8a1f-bd51170f6fd5",
+                    "path": "<Gamepad>/leftStick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Strafe",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "WASD",
+                    "id": "0d09c2d0-3d90-4fd4-ae97-e06bbbdb14ce",
+                    "path": "Dpad",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Strafe",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "up",
+                    "id": "cc765396-aa82-458d-8c0e-2386d62c5f50",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Strafe",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "up",
+                    "id": "846d34d5-e5b5-41d1-a7a2-decdcaadad24",
+                    "path": "<Keyboard>/upArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Strafe",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "5d30094e-b2f2-4acd-9011-9d72aa444a2d",
+                    "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Strafe",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "7bcebf94-bf58-4c87-b595-d40e60029dd4",
+                    "path": "<Keyboard>/downArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Strafe",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "4f8b18df-c118-491f-aa56-93a22d622a68",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Strafe",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "c1d278a9-75a2-4e5d-bf3a-7c2a3fa82655",
+                    "path": "<Keyboard>/leftArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Strafe",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "6b2fe5a6-1c8f-4cb0-9c9f-b828dbdd2324",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Strafe",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "50a6fb3b-780b-4e6c-b030-201cff6b1773",
+                    "path": "<Keyboard>/rightArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Strafe",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "130bffc0-2e30-4618-b3c6-1246c27a8737",
+                    "path": "<XRController>/{Primary2DAxis}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "XR",
+                    "action": "Strafe",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "25ec089e-ef60-44a6-96cc-e1d0ca5386de",
+                    "path": "<Joystick>/stick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Joystick",
+                    "action": "Strafe",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -34,7 +34,13 @@ namespace PROJECT_A11.Develops.Common
         private void CheckPotentialTransition()
         {
 
-            if (currentState == null) return;
+            if (currentState == null)
+            {
+
+                m_CurrentState = startState;
+
+                return;
+            }
 
             var state = m_CurrentState.CheckPotentialTransition();
 

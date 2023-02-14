@@ -10,10 +10,6 @@ using UnityEngine.InputSystem;
 namespace PROJECT_A11.Develops.Common
 {
 
-    [RequireComponent(typeof(PersonStartMovingState))]
-    [RequireComponent(typeof(PersonMovingState))]
-    [RequireComponent(typeof(PersonStartJumpingState))]
-    [RequireComponent(typeof(PersonIdleState))] 
     public class PersonFSM :
         Develops.Common.PawnFSM<Person, PersonFSM>
     {
@@ -24,8 +20,6 @@ namespace PROJECT_A11.Develops.Common
 
         protected override void Awake()
         {
-
-            startState = GetComponent<PersonIdleState>();
 
             base.Awake();
 
