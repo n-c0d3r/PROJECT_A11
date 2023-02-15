@@ -454,9 +454,12 @@ namespace PROJECT_A11.Develops.Common
                 if (input.targetInAirMovementMode == InAirMovementMode.Strafing)
                 {
 
-                    Vector3 targetVelocity = Quaternion.Euler(movementSettings.selfRotatingAxis * input.targetDeltaLook_forFixedUpdate.x) * m_CurrentMovement.velocity;
+                    Vector3 currVelocity = m_CurrentMovement.velocity;
+                    currVelocity.y = 0.0f;
 
-                    pawn.rigidbody.AddForce(pawn.rigidbody.mass * (targetVelocity - m_CurrentMovement.velocity) / Time.fixedDeltaTime);
+                    Vector3 targetVelocity = (Quaternion.Euler(movementSettings.selfRotatingAxis * input.targetDeltaLook_forFixedUpdate.x) * currVelocity);
+
+                    pawn.rigidbody.AddForce(pawn.rigidbody.mass * (targetVelocity - currVelocity) / Time.fixedDeltaTime);
 
                 }
 
