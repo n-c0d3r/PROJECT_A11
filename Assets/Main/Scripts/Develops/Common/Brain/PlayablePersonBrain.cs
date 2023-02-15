@@ -20,16 +20,12 @@ namespace PROJECT_A11.Develops.Common
 
         [Space(10)]
         [Header("Mouse Settings")]
-        public bool isMouseLocking = true;
-        public bool isMouseVisible = false;
-        public float MouseSensitivity = 1.0f;
+        public bool lockMouse = true;
+        public float mouseSensitivity = 1.0f;
 
 
 
         private PlayerInput m_PlayerInput;
-
-        private bool m_LastIsGroundedOrdinaryMoving = false;
-        private bool m_LastIsStrafing = false;
 
 
 
@@ -47,41 +43,23 @@ namespace PROJECT_A11.Develops.Common
 
 
 
-        protected override void Awake()
+        public Vector2 ProcessLookInput(Vector2 raw)
         {
 
-            base.Awake();
+            return raw * mouseSensitivity * (isCurrentDeviceMouse ? 1.0f : Time.deltaTime);
+        }
 
 
 
-            m_PlayerInput = GetComponent<PlayerInput>();
-
-
+        private void BindInputActions()
+        {
 
             m_PlayerInput.actions["GroundedOrdinaryMove"].performed += ctx => {
 
-                if (
-                    controller.input.targetInAirMovementMode == PersonController.InAirMovementMode.Strafing
-                    || controller.currentMovement.environment != PersonController.Environment.Grounded
-                ) return;
-
-                if (!m_LastIsGroundedOrdinaryMoving)
-                {
-
-                    controller.OnStartGroundedMoving(ctx.ReadValue<Vector2>());
-
-                }
-
-                m_LastIsGroundedOrdinaryMoving = true;
+                controller.OnGroundedMoving(ctx.ReadValue<Vector2>());
 
             };
             m_PlayerInput.actions["GroundedOrdinaryMove"].canceled += ctx => {
-
-                if (
-                    controller.input.targetGroundedMovementMode != PersonController.GroundedMovementMode.Ordinary
-                ) return;
-
-                m_LastIsGroundedOrdinaryMoving = false;
 
                 controller.OnStopGroundedMoving();
 
@@ -89,29 +67,10 @@ namespace PROJECT_A11.Develops.Common
 
             m_PlayerInput.actions["Strafe"].performed += ctx => {
 
-                if (
-                    controller.currentMovement.environment != PersonController.Environment.InAir
-                    && controller.input.targetInAirMovementMode != PersonController.InAirMovementMode.Strafing
-                ) 
-                    return;
-
-                if (!m_LastIsStrafing)
-                {
-
-                    controller.OnStartStrafing(ctx.ReadValue<Vector2>());
-
-                }
-
                 controller.OnStrafing(ctx.ReadValue<Vector2>());
-
-                m_LastIsStrafing = true;
 
             };
             m_PlayerInput.actions["Strafe"].canceled += ctx => {
-
-                if (controller.input.targetInAirMovementMode != PersonController.InAirMovementMode.Strafing) return;
-
-                m_LastIsStrafing = false;
 
                 controller.OnStopStrafing();
 
@@ -139,12 +98,66 @@ namespace PROJECT_A11.Develops.Common
 
             };
 
+            m_PlayerInput.actions["Look"].performed += ctx => {
+
+                controller.OnLooking(ProcessLookInput(ctx.ReadValue<Vector2>()));
+
+            };
+            m_PlayerInput.actions["Look"].canceled += ctx => {
+
+                controller.OnLooking(ProcessLookInput(ctx.ReadValue<Vector2>()));
+
+            };
+
+            m_PlayerInput.actions["Jump"].performed += ctx => {
+
+                controller.OnStartJumping();
+
+            };
+
+        }
+
+        private void UpdateCursorState()
+        {
+
+            if (lockMouse)
+            {
+
+                Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
+
+            }
+            else
+            {
+
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.None;
+
+            }
+
+        }
+
+
+
+        protected override void Awake()
+        {
+
+            base.Awake();
+
+
+
+            m_PlayerInput = GetComponent<PlayerInput>();
+
+
+
+            BindInputActions();
+
         }
 
         protected virtual void Update()
         {
 
-
+            UpdateCursorState();
 
         }
 

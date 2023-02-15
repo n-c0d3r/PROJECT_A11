@@ -452,7 +452,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 328335166}
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -8.809, y: 13.03, z: -3.59}
+  m_LocalPosition: {x: -9.643, y: 2.2, z: -3.59}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -515,28 +515,34 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movementSettings:
-    maxWalkingSpeed: 5
-    maxSprintingSpeed: 3.8
-    maxCrouchingSpeed: 2
-    walkingAcceleration: 10
-    sprintingAcceleration: 20
-    crouchingAcceleration: 7
-    groundedStrafingAcceleration: 10
-    inAirStrafingAcceleration: 10
-    jumpStartVelocity: 5
+    maxWalkingSpeed: 5.5
+    maxSprintingSpeed: 7
+    maxCrouchingSpeed: 4
+    walkingVelocityUpdatingSpeed: 10
+    sprintingVelocityUpdatingSpeed: 20
+    crouchingVelocityUpdatingSpeed: 10
+    jumpStartVelocity: 11
     headRotatingAxis: {x: 1, y: 0, z: 0}
     selfRotatingAxis: {x: 0, y: 1, z: 0}
-    headLookMin: -1.5707964
-    headLookMax: 1.5707964
+    headLookMin: -90
+    headLookMax: 90
+    jumpMaxDelay: 0.3
+    bhopMaxDelay: 0.2
+    gravity: {x: 0, y: -20, z: 0}
   headSettings:
     headTransform: {fileID: 1493483229}
+  bottomCircleColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  bottomCircleRadius: 1
+  bottomCircleThickness: 2
   m_Input:
     targetEnvironment: 0
     targetGroundedMovementMode: 0
     targetInAirMovementMode: 0
     targetBodyState: 1
     targetMoveDirection: {x: 0, y: 0, z: 0}
+    targetMoveInput: {x: 0, y: 0}
     targetDeltaLook: {x: 0, y: 0}
+    targetDeltaLook_forFixedUpdate: {x: 0, y: 0}
   m_CurrentMovement:
     environment: 1
     groundedMovementMode: 0
@@ -544,6 +550,7 @@ MonoBehaviour:
     bodyState: 1
     velocity: {x: 0, y: 0, z: 0}
     look: {x: 0, y: 0}
+    jumpTime: 0
   m_DefaultHeadRotation: {x: 0, y: 0, z: 0, w: 0}
   m_DefaultSelfRotation: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &328335172
@@ -720,9 +727,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2739eb165919a864fb0ff1a05e4a2a30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isMouseLocking: 1
-  isMouseVisible: 0
-  MouseSensitivity: 0.03
+  lockMouse: 1
+  mouseSensitivity: 0.045
 --- !u!114 &328335181
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -746,7 +752,9 @@ MonoBehaviour:
   endSphereColor: {r: 0, g: 1, b: 0, a: 1}
   checkedSphereColor: {r: 0, g: 0.84315085, b: 1, a: 1}
   checkedSphereRadius: 0.1
-  m_CheckedPosition: {x: -8.809, y: 12.55, z: -3.59}
+  checkedSphereThickness: 2
+  m_CheckedPosition: {x: -9.643, y: 0.0001, z: -3.5900002}
+  m_CheckedNormal: {x: 0, y: 1, z: 0}
   m_IsGrounded: 0
 --- !u!1 &570076867
 GameObject:
@@ -1093,7 +1101,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh29382
+  m_Name: pb_Mesh35470
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -1564,7 +1572,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh29368
+  m_Name: pb_Mesh35456
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -2755,7 +2763,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh29348
+  m_Name: pb_Mesh35436
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -2919,7 +2927,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh29396
+  m_Name: pb_Mesh35484
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -3083,7 +3091,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh29332
+  m_Name: pb_Mesh35420
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2

@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.XR;
 using UnityEngine.Windows;
 using static PROJECT_A11.Develops.Common.PersonController;
 
@@ -23,12 +25,9 @@ namespace PROJECT_A11.Develops.Common
             public float maxSprintingSpeed;
             public float maxCrouchingSpeed;
 
-            public float walkingAcceleration;
-            public float sprintingAcceleration;
-            public float crouchingAcceleration;
-
-            public float groundedStrafingAcceleration;
-            public float inAirStrafingAcceleration;
+            public float walkingVelocityUpdatingSpeed;
+            public float sprintingVelocityUpdatingSpeed;
+            public float crouchingVelocityUpdatingSpeed;
 
             public float jumpStartVelocity;
 
@@ -37,6 +36,11 @@ namespace PROJECT_A11.Develops.Common
 
             public float headLookMin;
             public float headLookMax;
+
+            public float jumpMaxDelay;
+            public float bhopMaxDelay;
+
+            public Vector3 gravity;
 
         }
 
@@ -75,8 +79,7 @@ namespace PROJECT_A11.Develops.Common
         {
 
             None, 
-            Ordinary,
-            Strafing
+            Ordinary
 
         }
 
@@ -100,7 +103,9 @@ namespace PROJECT_A11.Develops.Common
             public BodyState targetBodyState;
 
             public Vector3 targetMoveDirection;
+            public Vector2 targetMoveInput;
             public Vector2 targetDeltaLook;
+            public Vector2 targetDeltaLook_forFixedUpdate;
 
         }
 
@@ -116,6 +121,8 @@ namespace PROJECT_A11.Develops.Common
             public Vector3 velocity;
             public Vector2 look;
 
+            public float jumpTime;
+
         }
 
 
@@ -127,27 +134,39 @@ namespace PROJECT_A11.Develops.Common
             maxSprintingSpeed = 6.0f,
             maxCrouchingSpeed = 2.7f,
 
-            walkingAcceleration = 10.0f,
-            sprintingAcceleration = 10.0f,
-            crouchingAcceleration = 10.0f,
-
-            groundedStrafingAcceleration = 10.0f,
-            inAirStrafingAcceleration = 10.0f,
+            walkingVelocityUpdatingSpeed = 10.0f,
+            sprintingVelocityUpdatingSpeed = 10.0f,
+            crouchingVelocityUpdatingSpeed = 10.0f,
 
             jumpStartVelocity = 5.0f,
 
             headRotatingAxis = Vector3.right,
             selfRotatingAxis = Vector3.up,
 
-            headLookMin = -Mathf.PI * 0.5f,
-            headLookMax = Mathf.PI * 0.5f,
-        
+            headLookMin = -90.0f,
+            headLookMax = 90.0f,
+
+            jumpMaxDelay = 1.0f,
+            bhopMaxDelay = 0.2f,
+
+            gravity = Physics.gravity
+
         };
         public HeadSettings headSettings = new HeadSettings { 
         
 
         
         };
+
+
+
+#if UNITY_EDITOR
+        [Space(10)]
+        [Header("Debug Settings")]
+        public Color bottomCircleColor = Color.gray;
+        public float bottomCircleRadius = 1.0f;
+        public float bottomCircleThickness = 2.0f;
+#endif
 
 
 
@@ -163,21 +182,24 @@ namespace PROJECT_A11.Develops.Common
             targetBodyState = BodyState.Sprinting,
 
             targetMoveDirection = Vector3.zero,
-            targetDeltaLook = Vector2.zero
+            targetDeltaLook = Vector2.zero,
+            targetDeltaLook_forFixedUpdate = Vector2.zero
         
         };
         public Input input { get { return m_Input; } }
         [ReadOnly]
         [SerializeField]
-        private Movement m_CurrentMovement = new Movement { 
-        
+        private Movement m_CurrentMovement = new Movement {
+
             environment = Environment.InAir,
             groundedMovementMode = GroundedMovementMode.None,
             inAirMovementMode = InAirMovementMode.None,
             bodyState = BodyState.Sprinting,
 
             velocity = Vector3.zero,
-            look = Vector2.zero
+            look = Vector2.zero,
+
+            jumpTime = 0.0f
 
         };
         public Movement currentMovement { get { return m_CurrentMovement; } }
@@ -190,6 +212,82 @@ namespace PROJECT_A11.Develops.Common
         [SerializeField]
         private Quaternion m_DefaultSelfRotation;
         public Quaternion defaultSelfRotation { get { return m_DefaultSelfRotation; } }
+
+
+
+        public Vector3 bottomPoint
+        {
+
+            get
+            {
+
+                return transform.position + Vector3.down * (pawn.capsuleCollider.height * 0.5f);
+            }
+
+        }
+
+        public Vector3 up
+        {
+
+            get
+            {
+
+                return groundChecker.checkedNormal;
+            }
+
+        }
+        public Vector3 bottom
+        {
+
+            get
+            {
+
+                return -groundChecker.checkedNormal;
+            }
+
+        }
+
+        public Vector3 forward
+        {
+
+            get
+            {
+
+                return Vector3.Cross(transform.right, up);
+            }
+
+        }
+        public Vector3 back
+        {
+
+            get
+            {
+
+                return -Vector3.Cross(transform.right, up);
+            }
+
+        }
+
+        public Vector3 right
+        {
+
+            get
+            {
+
+                return -Vector3.Cross(transform.forward, up);
+            }
+
+        }
+        public Vector3 left
+        {
+
+            get
+            {
+
+                return Vector3.Cross(transform.forward, up);
+            }
+
+        }
 
 
 
@@ -225,6 +323,37 @@ namespace PROJECT_A11.Develops.Common
 
 
 
+        private void UpdateInput()
+        {
+
+            m_Input.targetMoveDirection = forward * m_Input.targetMoveInput.y + right * m_Input.targetMoveInput.x;
+
+        }
+
+
+
+        private void Rotate()
+        {
+
+            /// Rotates
+            {
+
+                m_CurrentMovement.look.x += input.targetDeltaLook.x;
+                m_CurrentMovement.look.y = Mathf.Clamp(m_CurrentMovement.look.y + input.targetDeltaLook.y, movementSettings.headLookMin, movementSettings.headLookMax);
+
+                transform.rotation = m_DefaultSelfRotation * Quaternion.Euler(movementSettings.selfRotatingAxis * m_CurrentMovement.look.x);
+                headSettings.headTransform.localRotation = m_DefaultHeadRotation * Quaternion.Euler(-movementSettings.headRotatingAxis * m_CurrentMovement.look.y);
+
+            }
+
+
+
+            m_Input.targetDeltaLook = Vector2.zero;
+
+        }
+
+
+
         private void UpdateCurrentMovement()
         {
 
@@ -244,11 +373,152 @@ namespace PROJECT_A11.Develops.Common
             }
             m_CurrentMovement.environment = groundChecker.isGrounded ? Environment.Grounded : Environment.InAir;
 
+
+
+            /// Update velocity,...
+            m_CurrentMovement.velocity = pawn.rigidbody.velocity;
+
         }
+
+
+
         private void ApplyInput()
         {
+            
+            switch (m_CurrentMovement.environment)
+            {
+
+                case Environment.Grounded:
 
 
+
+                    break;
+                case Environment.InAir:
+
+
+
+                    break;
+            }
+
+
+
+            bool isJumped = false;
+
+            /// Jumps
+            {
+
+                if(m_Input.targetEnvironment == Environment.InAir)
+                    m_CurrentMovement.jumpTime += Time.fixedDeltaTime;
+
+                if (
+                    m_Input.targetEnvironment == Environment.InAir
+                    && m_CurrentMovement.environment == Environment.Grounded
+                    && (
+                        m_CurrentMovement.jumpTime <= movementSettings.jumpMaxDelay
+                    )
+                )
+                {
+
+                    ImmediatelyJump();
+
+                    isJumped = true;
+
+                }
+
+            }
+
+
+
+            if(!isJumped)
+            {
+
+                /// Ordinary Moves
+                if (m_CurrentMovement.environment == Environment.Grounded)
+                {
+
+                    Vector3 currVelocity = m_CurrentMovement.velocity;
+
+                    Vector3 targetMoveDirection = input.targetMoveDirection;
+
+                    float targetSpeed = movementSettings.maxSprintingSpeed;
+                    if (input.targetBodyState == BodyState.Ordinary)
+                        targetSpeed = movementSettings.maxWalkingSpeed;
+                    if (input.targetBodyState == BodyState.Crouching)
+                        targetSpeed = movementSettings.maxCrouchingSpeed;
+
+                    float velocityUpdatingSpeed = movementSettings.sprintingVelocityUpdatingSpeed;
+                    if (input.targetBodyState == BodyState.Ordinary)
+                        velocityUpdatingSpeed = movementSettings.walkingVelocityUpdatingSpeed;
+                    if (input.targetBodyState == BodyState.Crouching)
+                        velocityUpdatingSpeed = movementSettings.crouchingVelocityUpdatingSpeed;
+
+                    Vector3 targetVelocity = targetSpeed * targetMoveDirection;
+
+                    Vector3 newVelocity = Vector3.Lerp(currVelocity, targetVelocity, Time.fixedDeltaTime * velocityUpdatingSpeed);
+
+                    pawn.rigidbody.AddForce(pawn.rigidbody.mass * (newVelocity - currVelocity) / Time.fixedDeltaTime);
+
+
+
+                    if (
+                        input.targetMoveInput == Vector2.zero
+                        && input.targetGroundedMovementMode == GroundedMovementMode.Ordinary
+                    )
+                    {
+
+                        OnStopGroundedMoving();
+
+                    }
+
+                }
+
+
+
+                /// Strafes
+                if (input.targetInAirMovementMode == InAirMovementMode.Strafing)
+                {
+
+                    Vector3 targetVelocity = Quaternion.Euler(movementSettings.selfRotatingAxis * input.targetDeltaLook_forFixedUpdate.x) * m_CurrentMovement.velocity;
+
+                    pawn.rigidbody.AddForce(pawn.rigidbody.mass * (targetVelocity - m_CurrentMovement.velocity) / Time.fixedDeltaTime);
+
+                }
+
+            }
+
+
+
+            m_Input.targetDeltaLook_forFixedUpdate = Vector2.zero;
+
+
+            m_CurrentMovement.groundedMovementMode = input.targetGroundedMovementMode;
+            m_CurrentMovement.inAirMovementMode = input.targetInAirMovementMode;
+            m_CurrentMovement.bodyState = input.targetBodyState;
+
+        }
+
+        private void ApplyGravity()
+        {
+
+            pawn.rigidbody.AddForce(pawn.rigidbody.mass * (movementSettings.gravity - Physics.gravity));
+
+        }
+
+
+
+        protected virtual void ImmediatelyJump()
+        {
+
+            m_Input.targetEnvironment = Environment.Grounded;
+
+            m_CurrentMovement.jumpTime = movementSettings.jumpMaxDelay * 2.0f;
+
+            Vector3 currVelocity = pawn.rigidbody.velocity;
+            Vector3 targetVelocity = currVelocity;
+
+            targetVelocity.y = Mathf.Max(currVelocity.y, movementSettings.jumpStartVelocity + currVelocity.y);
+
+            pawn.rigidbody.AddForce(pawn.rigidbody.mass * (targetVelocity - currVelocity) / Time.fixedDeltaTime);
 
         }
 
@@ -259,14 +529,14 @@ namespace PROJECT_A11.Develops.Common
 
             m_CurrentMovement.environment = Environment.Grounded;
 
-            if (
-                m_CurrentMovement.inAirMovementMode == InAirMovementMode.Strafing
-                || m_Input.targetInAirMovementMode == InAirMovementMode.Strafing
-            )
+            m_Input.targetInAirMovementMode = InAirMovementMode.None;
+
+            m_CurrentMovement.jumpTime = 0.0f;
+
+            if (m_Input.targetMoveInput != Vector2.zero)
             {
 
-                m_CurrentMovement.groundedMovementMode = GroundedMovementMode.Strafing;
-                m_Input.targetGroundedMovementMode = GroundedMovementMode.Strafing;
+                OnGroundedMoving(m_Input.targetMoveInput);
 
             }
 
@@ -278,29 +548,61 @@ namespace PROJECT_A11.Develops.Common
 
             m_CurrentMovement.environment = Environment.InAir;
 
+            m_Input.targetGroundedMovementMode = GroundedMovementMode.None;
+
+            if (m_Input.targetMoveInput != Vector2.zero)
+            {
+
+                OnStrafing(m_Input.targetMoveInput);
+
+            }
+
             brain.OnEndGrounded();
 
         }
 
-        public virtual void OnStartGroundedMoving(Vector2 input)
+        protected virtual void OnStartGroundedMoving(Vector2 input)
         {
-            if (
-                m_CurrentMovement.inAirMovementMode != InAirMovementMode.Strafing
-                && m_Input.targetInAirMovementMode != InAirMovementMode.Strafing
-            )
-            {
 
-                m_Input.targetGroundedMovementMode = GroundedMovementMode.Ordinary;
+            m_Input.targetMoveInput = input;
 
-            }
+            if (currentMovement.environment != PersonController.Environment.Grounded)
+                return;
+
+            m_Input.targetGroundedMovementMode = GroundedMovementMode.Ordinary;
 
             brain.OnStartGroundedMoving(input);
 
         }
+        public virtual void OnGroundedMoving(Vector2 input)
+        {
+
+            m_Input.targetMoveInput = input;
+
+            if (currentMovement.environment != PersonController.Environment.Grounded)
+                return;
+
+            if (m_Input.targetGroundedMovementMode != GroundedMovementMode.Ordinary)
+            {
+
+                OnStartGroundedMoving(input);
+
+            }
+
+            m_Input.targetGroundedMovementMode = GroundedMovementMode.Ordinary;
+
+            brain.OnStartGroundedMoving(input);
+
+        }
+
         public virtual void OnStopGroundedMoving()
         {
 
+            if (m_Input.targetGroundedMovementMode != GroundedMovementMode.Ordinary) return;
+
             m_Input.targetGroundedMovementMode = GroundedMovementMode.None;
+
+            m_Input.targetMoveInput = Vector2.zero;
 
             brain.OnStopGroundedMoving();
 
@@ -338,10 +640,14 @@ namespace PROJECT_A11.Develops.Common
 
         }
 
-        public virtual void OnStartStrafing(Vector2 input)
+        protected virtual void OnStartStrafing(Vector2 input)
         {
 
+            if (currentMovement.environment != PersonController.Environment.InAir)
+                return;
+
             m_Input.targetInAirMovementMode = InAirMovementMode.Strafing;
+            m_Input.targetMoveInput = input;
 
             brain.OnStartStrafing(input);
 
@@ -349,14 +655,18 @@ namespace PROJECT_A11.Develops.Common
         public virtual void OnStrafing(Vector2 input)
         {
 
-            m_Input.targetInAirMovementMode = InAirMovementMode.Strafing;
+            if (currentMovement.environment != PersonController.Environment.InAir)
+                return;
 
-            if (m_Input.targetGroundedMovementMode == GroundedMovementMode.Strafing)
+            if (m_Input.targetInAirMovementMode != InAirMovementMode.Strafing)
             {
 
-                m_Input.targetGroundedMovementMode = GroundedMovementMode.None;
+                OnStartStrafing(input);
 
             }
+
+            m_Input.targetInAirMovementMode = InAirMovementMode.Strafing;
+            m_Input.targetMoveInput = input;
 
             brain.OnStrafing(input);
 
@@ -364,7 +674,10 @@ namespace PROJECT_A11.Develops.Common
         public virtual void OnStopStrafing()
         {
 
+            if (m_Input.targetInAirMovementMode != InAirMovementMode.Strafing) return;
+
             m_Input.targetInAirMovementMode = InAirMovementMode.None;
+            m_Input.targetMoveInput = Vector2.zero;
 
             brain.OnStopStrafing();
 
@@ -373,6 +686,7 @@ namespace PROJECT_A11.Develops.Common
         {
 
             m_Input.targetEnvironment = Environment.InAir;
+            m_CurrentMovement.jumpTime = 0.0f;
 
             brain.OnStartJumping();
 
@@ -382,6 +696,7 @@ namespace PROJECT_A11.Develops.Common
         {
 
             m_Input.targetDeltaLook += input;
+            m_Input.targetDeltaLook_forFixedUpdate += input;
 
             brain.OnLooking(input);
 
@@ -400,14 +715,15 @@ namespace PROJECT_A11.Develops.Common
 
 
 
-            m_DefaultHeadRotation = headSettings.headTransform.rotation;
+            m_DefaultHeadRotation = headSettings.headTransform.localRotation;
             m_DefaultSelfRotation = transform.rotation;
 
         }
         protected virtual void Update()
         {
 
-
+            UpdateInput();
+            Rotate();
 
         }
         protected virtual void FixedUpdate()
@@ -415,8 +731,26 @@ namespace PROJECT_A11.Develops.Common
 
             UpdateCurrentMovement();
             ApplyInput();
+            ApplyGravity();
 
         }
+
+
+
+#if UNITY_EDITOR
+        private void OnDrawGizmos()
+        {
+
+            if(groundChecker.isGrounded)
+            {
+
+                Handles.color = bottomCircleColor;
+                Handles.DrawWireDisc(bottomPoint, groundChecker.checkedNormal, bottomCircleRadius, bottomCircleThickness);
+
+            }
+
+        }
+#endif
 
     }
 

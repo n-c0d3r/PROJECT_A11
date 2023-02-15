@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.InputSystem;
@@ -27,6 +28,7 @@ namespace PROJECT_A11.Develops.Common
         public Color endSphereColor = Color.green;
         public Color checkedSphereColor = Color.blue;
         public float checkedSphereRadius = 0.2f;
+        public float checkedSphereThickness = 2.0f;
 #endif
 
 
@@ -36,6 +38,11 @@ namespace PROJECT_A11.Develops.Common
         [ReadOnly]
         [SerializeField]
         private Vector3 m_CheckedPosition;
+        public Vector3 checkedPosition { get { return m_CheckedPosition; } }
+        [ReadOnly]
+        [SerializeField]
+        private Vector3 m_CheckedNormal;
+        public Vector3 checkedNormal { get { return m_CheckedNormal; } }
 
         [ReadOnly]
         [SerializeField]
@@ -72,13 +79,14 @@ namespace PROJECT_A11.Develops.Common
             {
 
                 m_CheckedPosition = hit.point;
+                m_CheckedNormal = hit.normal;
                 m_IsGrounded = true;
 
             }
             else
             {
 
-                m_CheckedPosition = transform.position + offset;
+                m_CheckedNormal = transform.up;
                 m_IsGrounded = false;
 
             }
@@ -97,8 +105,11 @@ namespace PROJECT_A11.Develops.Common
 
             if (!m_IsGrounded) return;
 
-            Gizmos.color = checkedSphereColor;
-            Gizmos.DrawWireSphere(m_CheckedPosition, checkedSphereRadius);
+            Handles.color = checkedSphereColor;
+            Handles.DrawWireDisc(m_CheckedPosition, m_CheckedNormal, checkedSphereRadius, checkedSphereThickness);
+            Handles.color = checkedSphereColor * 0.5f;
+            Handles.DrawWireDisc(m_CheckedPosition, transform.right, checkedSphereRadius, checkedSphereThickness * 0.5f);
+            Handles.DrawWireDisc(m_CheckedPosition, transform.forward, checkedSphereRadius, checkedSphereThickness * 0.5f);
 
         }
 #endif
