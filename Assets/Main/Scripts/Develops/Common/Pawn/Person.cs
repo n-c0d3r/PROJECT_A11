@@ -22,6 +22,42 @@ namespace PROJECT_A11.Develops.Common
         >
     {
 
+        [System.Serializable]
+        public struct ShapeSettings
+        {
+
+            public float radius;
+            public float height;
+
+        }
+
+        [System.Serializable]
+        public struct HeadSettings
+        {
+
+            public Transform headTransform;
+            public Vector3 headOffset;
+
+        }
+
+
+
+        public ShapeSettings shapeSettings = new ShapeSettings
+        {
+
+            radius = 0.5f,
+            height = 2.0f
+
+        };
+        public HeadSettings headSettings = new HeadSettings
+        {
+
+            headOffset = new Vector3(0.0f, 1.5f, 0.0f)
+
+        };
+
+
+
         private Rigidbody m_Rigidbody;
         public Rigidbody rigidbody
         {
@@ -50,6 +86,23 @@ namespace PROJECT_A11.Develops.Common
 
 
 
+        public void UpdateShape()
+        {
+
+            capsuleCollider.height = shapeSettings.height;
+            capsuleCollider.radius = shapeSettings.radius;
+            capsuleCollider.center = Vector3.up * shapeSettings.height * 0.5f;
+
+        }
+        public void UpdateHead()
+        {
+
+            headSettings.headTransform.localPosition = headSettings.headOffset;
+
+        }
+
+
+
         protected override void Awake()
         {
 
@@ -59,10 +112,16 @@ namespace PROJECT_A11.Develops.Common
             m_CapsuleCollider = GetComponent<CapsuleCollider>();
 
         }
+        protected virtual void Update()
+        {
+
+            UpdateHead();
+
+        }
         protected virtual void FixedUpdate()
         {
 
-
+            UpdateShape();
 
         }
 

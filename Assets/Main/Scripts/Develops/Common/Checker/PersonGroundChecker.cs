@@ -15,10 +15,10 @@ namespace PROJECT_A11.Develops.Common
         MonoBehaviour
     {
 
-        public float maxDistance;
-        public float radius;
-        public Vector3 offset;
-        public Vector3 direction;
+        public float maxDistance = 0.2f;
+        public float radius = 0.5f;
+        public Vector3 offset = Vector3.up * 0.5f;
+        public Vector3 direction = Vector3.down;
         public LayerMask mask;
 
 #if UNITY_EDITOR
@@ -26,7 +26,7 @@ namespace PROJECT_A11.Develops.Common
         [Header("Debug Settings")]
         public Color beginningSphereColor = Color.red;
         public Color endSphereColor = Color.green;
-        public Color checkedSphereColor = Color.blue;
+        public Color checkedSphereColor = Color.cyan;
         public float checkedSphereRadius = 0.2f;
         public float checkedSphereThickness = 2.0f;
 #endif
@@ -75,7 +75,7 @@ namespace PROJECT_A11.Develops.Common
 
             RaycastHit hit;
 
-            if (Physics.SphereCast(transform.position + offset, radius, direction, out hit, maxDistance, mask))
+            if (Physics.SphereCast(transform.position + offset - direction.normalized * 0.001f, radius, direction, out hit, maxDistance, mask))
             {
 
                 m_CheckedPosition = hit.point;

@@ -21,7 +21,7 @@ namespace PROJECT_A11.Develops.Common
         [Space(10)]
         [Header("Mouse Settings")]
         public bool lockMouse = true;
-        public float mouseSensitivity = 1.0f;
+        public float mouseSensitivity = 0.045f;
 
 
 

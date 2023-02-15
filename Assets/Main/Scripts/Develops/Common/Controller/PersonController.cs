@@ -45,14 +45,6 @@ namespace PROJECT_A11.Develops.Common
         }
 
         [System.Serializable]
-        public struct HeadSettings
-        {
-
-            public Transform headTransform;
-
-        }
-
-        [System.Serializable]
         public enum Environment
         {
 
@@ -130,15 +122,15 @@ namespace PROJECT_A11.Develops.Common
         [Space(10)]
         public MovementSettings movementSettings = new MovementSettings {
 
-            maxWalkingSpeed = 4.0f,
-            maxSprintingSpeed = 6.0f,
-            maxCrouchingSpeed = 2.7f,
+            maxWalkingSpeed = 5.5f,
+            maxSprintingSpeed = 7.0f,
+            maxCrouchingSpeed = 4.0f,
 
             walkingVelocityUpdatingSpeed = 10.0f,
-            sprintingVelocityUpdatingSpeed = 10.0f,
+            sprintingVelocityUpdatingSpeed = 20.0f,
             crouchingVelocityUpdatingSpeed = 10.0f,
 
-            jumpStartVelocity = 5.0f,
+            jumpStartVelocity = 11.0f,
 
             headRotatingAxis = Vector3.right,
             selfRotatingAxis = Vector3.up,
@@ -146,16 +138,11 @@ namespace PROJECT_A11.Develops.Common
             headLookMin = -90.0f,
             headLookMax = 90.0f,
 
-            jumpMaxDelay = 1.0f,
+            jumpMaxDelay = 0.3f,
             bhopMaxDelay = 0.2f,
 
-            gravity = Physics.gravity
+            gravity = Vector3.down * 20.0f
 
-        };
-        public HeadSettings headSettings = new HeadSettings { 
-        
-
-        
         };
 
 
@@ -214,17 +201,6 @@ namespace PROJECT_A11.Develops.Common
         public Quaternion defaultSelfRotation { get { return m_DefaultSelfRotation; } }
 
 
-
-        public Vector3 bottomPoint
-        {
-
-            get
-            {
-
-                return transform.position + Vector3.down * (pawn.capsuleCollider.height * 0.5f);
-            }
-
-        }
 
         public Vector3 up
         {
@@ -342,7 +318,7 @@ namespace PROJECT_A11.Develops.Common
                 m_CurrentMovement.look.y = Mathf.Clamp(m_CurrentMovement.look.y + input.targetDeltaLook.y, movementSettings.headLookMin, movementSettings.headLookMax);
 
                 transform.rotation = m_DefaultSelfRotation * Quaternion.Euler(movementSettings.selfRotatingAxis * m_CurrentMovement.look.x);
-                headSettings.headTransform.localRotation = m_DefaultHeadRotation * Quaternion.Euler(-movementSettings.headRotatingAxis * m_CurrentMovement.look.y);
+                pawn.headSettings.headTransform.localRotation = m_DefaultHeadRotation * Quaternion.Euler(-movementSettings.headRotatingAxis * m_CurrentMovement.look.y);
 
             }
 
@@ -715,7 +691,7 @@ namespace PROJECT_A11.Develops.Common
 
 
 
-            m_DefaultHeadRotation = headSettings.headTransform.localRotation;
+            m_DefaultHeadRotation = pawn.headSettings.headTransform.localRotation;
             m_DefaultSelfRotation = transform.rotation;
 
         }
@@ -745,7 +721,7 @@ namespace PROJECT_A11.Develops.Common
             {
 
                 Handles.color = bottomCircleColor;
-                Handles.DrawWireDisc(bottomPoint, groundChecker.checkedNormal, bottomCircleRadius, bottomCircleThickness);
+                Handles.DrawWireDisc(transform.position, groundChecker.checkedNormal, bottomCircleRadius, bottomCircleThickness);
 
             }
 
