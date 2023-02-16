@@ -495,9 +495,13 @@ namespace PROJECT_A11.Develops.Common
             Vector3 currVelocity = pawn.rigidbody.velocity;
             Vector3 targetVelocity = currVelocity;
 
-            targetVelocity.y = Mathf.Max(currVelocity.y, movementSettings.jumpStartVelocity + currVelocity.y);
+            targetVelocity.y = Mathf.Max(currVelocity.y, movementSettings.jumpStartVelocity);
 
-            pawn.rigidbody.AddForce(pawn.rigidbody.mass * (targetVelocity - currVelocity) / Time.fixedDeltaTime);
+            pawn.rigidbody.velocity = targetVelocity;
+
+            //Debug.Log(targetVelocity);
+
+            //pawn.rigidbody.AddForce(pawn.rigidbody.mass * (targetVelocity - currVelocity) / Time.fixedDeltaTime);
 
         }
 
@@ -709,8 +713,8 @@ namespace PROJECT_A11.Develops.Common
         {
 
             UpdateCurrentMovement();
-            ApplyInput();
             ApplyGravity();
+            ApplyInput();
 
         }
 

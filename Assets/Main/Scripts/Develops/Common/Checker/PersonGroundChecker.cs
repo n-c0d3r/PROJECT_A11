@@ -15,7 +15,6 @@ namespace PROJECT_A11.Develops.Common
         MonoBehaviour
     {
 
-        public float maxDistance = 0.2f;
         public float radius = 0.5f;
         public Vector3 offset = Vector3.up * 0.5f;
         public Vector3 direction = Vector3.down;
@@ -24,9 +23,9 @@ namespace PROJECT_A11.Develops.Common
 #if UNITY_EDITOR
         [Space(10)]
         [Header("Debug Settings")]
-        public Color beginningSphereColor = Color.red;
-        public Color endSphereColor = Color.green;
-        public Color checkedSphereColor = Color.cyan;
+        public Color checkingSphereColor = Color.green;
+        public float checkingSphereThickness = 2.0f;
+        public Color checkedSphereColor = Color.magenta;
         public float checkedSphereRadius = 0.2f;
         public float checkedSphereThickness = 2.0f;
 #endif
@@ -75,7 +74,7 @@ namespace PROJECT_A11.Develops.Common
 
             RaycastHit hit;
 
-            if (Physics.SphereCast(transform.position + offset - direction.normalized * 0.001f, radius, direction, out hit, maxDistance, mask))
+            if (Physics.SphereCast(transform.position + offset - direction.normalized * 0.001f, radius, direction, out hit, 0.05f, mask))
             {
 
                 m_CheckedPosition = hit.point;
@@ -97,19 +96,19 @@ namespace PROJECT_A11.Develops.Common
         private void OnDrawGizmos()
         {
 
-            Gizmos.color = beginningSphereColor;
-            Gizmos.DrawWireSphere(transform.position + offset, radius);
-
-            Gizmos.color = endSphereColor;
-            Gizmos.DrawWireSphere(transform.position + offset + maxDistance * direction, radius);
+            Handles.color = checkingSphereColor;
+            Handles.DrawWireDisc(transform.position + offset, m_CheckedNormal, radius, checkingSphereThickness);
+            Handles.color = checkingSphereColor * 0.75f;
+            Handles.DrawWireDisc(transform.position + offset, transform.right, radius, checkingSphereThickness * 0.5f);
+            Handles.DrawWireDisc(transform.position + offset, transform.forward, radius, checkingSphereThickness * 0.5f);
 
             if (!m_IsGrounded) return;
 
             Handles.color = checkedSphereColor;
             Handles.DrawWireDisc(m_CheckedPosition, m_CheckedNormal, checkedSphereRadius, checkedSphereThickness);
             Handles.color = checkedSphereColor * 0.5f;
-            Handles.DrawWireDisc(m_CheckedPosition, transform.right, checkedSphereRadius, checkedSphereThickness * 0.5f);
-            Handles.DrawWireDisc(m_CheckedPosition, transform.forward, checkedSphereRadius, checkedSphereThickness * 0.5f);
+            Handles.DrawWireDisc(m_CheckedPosition, transform.right, checkedSphereRadius, checkedSphereThickness * 0.75f);
+            Handles.DrawWireDisc(m_CheckedPosition, transform.forward, checkedSphereRadius, checkedSphereThickness * 0.75f);
 
         }
 #endif
