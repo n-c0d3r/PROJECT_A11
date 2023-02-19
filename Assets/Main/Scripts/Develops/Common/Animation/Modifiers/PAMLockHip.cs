@@ -28,8 +28,10 @@ namespace PROJECT_A11.Develops.Common
         public EditorCurveBinding hipRotationZCurveBinding;
         public EditorCurveBinding hipRotationWCurveBinding;
 
-        public bool lockPosition = true;
-        public bool lockRotation = true;
+        public bool lockPositionX = true;
+        public bool lockPositionY = false;
+        public bool lockPositionZ = true;
+        public bool lockRotation = false;
 
         public int defaultKeyIndex = 0;
 
@@ -82,7 +84,7 @@ namespace PROJECT_A11.Develops.Common
 
 
 
-            if (lockPosition)
+            if (lockPositionX)
             {
                 for (int i = 0; i < hipPositionXCurve_in.keys.Length; ++i)
                 {
@@ -90,22 +92,6 @@ namespace PROJECT_A11.Develops.Common
                     hipPositionXCurveKFs_out[i] = hipPositionXCurve_in.keys[defaultKeyIndex];
                     hipPositionXCurveKFs_out[i].inTangent = 0.0f;
                     hipPositionXCurveKFs_out[i].outTangent = 0.0f;
-
-                }
-                for (int i = 0; i < hipPositionYCurve_in.keys.Length; ++i)
-                {
-
-                    hipPositionYCurveKFs_out[i] = hipPositionYCurve_in.keys[defaultKeyIndex];
-                    hipPositionYCurveKFs_out[i].inTangent = 0.0f;
-                    hipPositionYCurveKFs_out[i].outTangent = 0.0f;
-
-                }
-                for (int i = 0; i < hipPositionZCurve_in.keys.Length; ++i)
-                {
-
-                    hipPositionZCurveKFs_out[i] = hipPositionZCurve_in.keys[defaultKeyIndex];
-                    hipPositionZCurveKFs_out[i].inTangent = 0.0f;
-                    hipPositionZCurveKFs_out[i].outTangent = 0.0f;
 
                 }
             }
@@ -117,12 +103,40 @@ namespace PROJECT_A11.Develops.Common
                     hipPositionXCurveKFs_out[i] = hipPositionXCurve_in.keys[i];
 
                 }
+            }
+            if (lockPositionY)
+            {
+                for (int i = 0; i < hipPositionYCurve_in.keys.Length; ++i)
+                {
+
+                    hipPositionYCurveKFs_out[i] = hipPositionYCurve_in.keys[defaultKeyIndex];
+                    hipPositionYCurveKFs_out[i].inTangent = 0.0f;
+                    hipPositionYCurveKFs_out[i].outTangent = 0.0f;
+
+                }
+            }
+            else
+            {
                 for (int i = 0; i < hipPositionYCurve_in.keys.Length; ++i)
                 {
 
                     hipPositionYCurveKFs_out[i] = hipPositionYCurve_in.keys[i];
 
                 }
+            }
+            if (lockPositionZ)
+            {
+                for (int i = 0; i < hipPositionZCurve_in.keys.Length; ++i)
+                {
+
+                    hipPositionZCurveKFs_out[i] = hipPositionZCurve_in.keys[defaultKeyIndex];
+                    hipPositionZCurveKFs_out[i].inTangent = 0.0f;
+                    hipPositionZCurveKFs_out[i].outTangent = 0.0f;
+
+                }
+            }
+            else
+            {
                 for (int i = 0; i < hipPositionZCurve_in.keys.Length; ++i)
                 {
 

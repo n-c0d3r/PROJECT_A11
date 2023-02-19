@@ -31,7 +31,9 @@ namespace PROJECT_A11.Develops.Common
             hipRotationZCurveBinding = EditorCurveBinding.FloatCurve("", typeof(UnityEngine.Animator), "RootQ.z");
             hipRotationWCurveBinding = EditorCurveBinding.FloatCurve("", typeof(UnityEngine.Animator), "RootQ.w");
 
-            lockPosition = true;
+            lockPositionX = true;
+            lockPositionY = false;
+            lockPositionZ = true;
             lockRotation = false;
 
             defaultKeyIndex = 0;
