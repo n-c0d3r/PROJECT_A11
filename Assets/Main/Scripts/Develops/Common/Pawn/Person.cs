@@ -13,12 +13,14 @@ namespace PROJECT_A11.Develops.Common
     [RequireComponent(typeof(CapsuleCollider))]
     [RequireComponent(typeof(PersonController))]
     [RequireComponent(typeof(PersonFSM))]
+    [RequireComponent(typeof(PersonAnimation))]
     public class Person :
         Develops.Common.Pawn<
             Person,
             PersonController,
             PersonFSM,
-            PersonBrain
+            PersonBrain,
+            PersonAnimation
         >
     {
 

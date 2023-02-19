@@ -430,7 +430,7 @@ namespace PROJECT_A11.Develops.Common
 
                     Vector3 targetVelocity = targetSpeed * targetMoveDirection;
 
-                    Vector3 newVelocity = Vector3.Lerp(currVelocity, targetVelocity, Time.fixedDeltaTime * velocityUpdatingSpeed);
+                    Vector3 newVelocity = Vector3.Lerp(currVelocity, targetVelocity, Mathf.Clamp01(Time.fixedDeltaTime * velocityUpdatingSpeed));
 
                     pawn.rigidbody.AddForce(pawn.rigidbody.mass * (newVelocity - currVelocity) / Time.fixedDeltaTime);
 

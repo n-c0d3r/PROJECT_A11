@@ -10,14 +10,10 @@ using UnityEngine.Assertions;
 
 namespace PROJECT_A11.Develops.Common
 {
+    [System.Serializable]
     public class AnimationModifier :
         ScriptableObject
     {
-
-        [SerializeField]
-        private AnimationModifier[] m_Requirements;
-
-
 
         public virtual void Apply(AnimationClip clip)
         {
