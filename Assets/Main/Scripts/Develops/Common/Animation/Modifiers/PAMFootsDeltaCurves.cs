@@ -19,14 +19,10 @@ namespace PROJECT_A11.Develops.Common
         Develops.Common.AnimationModifier
     {
 
-        public AnimationClip breathClip;
-
-
-
-        public override void Apply(AnimationClip clip)
+        public override void Apply(AnimationClip inputClip, AnimationClip outputClip)
         {
 
-            base.Apply(clip);
+            base.Apply(inputClip, outputClip);
 
 
 

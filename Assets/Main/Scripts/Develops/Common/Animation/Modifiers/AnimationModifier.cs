@@ -15,10 +15,13 @@ namespace PROJECT_A11.Develops.Common
         ScriptableObject
     {
 
-        public virtual void Apply(AnimationClip clip)
+        public bool usePreviousOutputAsInput = false;
+
+        public virtual void Apply(AnimationClip inputClip, AnimationClip outputClip)
         {
 
-            Assert.IsNotNull(clip);
+            Assert.IsNotNull(inputClip);
+            Assert.IsNotNull(outputClip);
 
         }
 

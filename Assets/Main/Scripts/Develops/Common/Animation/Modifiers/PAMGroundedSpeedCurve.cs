@@ -32,10 +32,10 @@ namespace PROJECT_A11.Develops.Common
 
 
 
-        public override void Apply(AnimationClip clip)
+        public override void Apply(AnimationClip inputClip, AnimationClip outputClip)
         {
 
-            base.Apply(clip);
+            base.Apply(inputClip, outputClip);
 
 
            
@@ -44,7 +44,7 @@ namespace PROJECT_A11.Develops.Common
             var stateMachine = animatorController.layers[0].stateMachine;
             var mainState = stateMachine.AddState("Main");
             stateMachine.defaultState = mainState;
-            mainState.motion = clip;
+            mainState.motion = inputClip;
 
 
 
@@ -55,7 +55,7 @@ namespace PROJECT_A11.Develops.Common
 
 
 
-            int frameCount = (int)(clip.length * framesPerSecond);
+            int frameCount = (int)(inputClip.length * framesPerSecond);
 
             Keyframe[] keyframes = new Keyframe[frameCount];
 
@@ -68,23 +68,23 @@ namespace PROJECT_A11.Develops.Common
             try
             {
 
-                AnimationMode.SampleAnimationClip(testingPerson.gameObject, clip, 0);
+                AnimationMode.SampleAnimationClip(testingPerson.gameObject, inputClip, 0);
 
-                Vector3 oldPelvisPos = personAnimation.bonePelvis.localPosition;
+                Vector3 oldHipPos = personAnimation.boneHip.localPosition;
 
                 for (int i = 1; i < frameCount; ++i)
                 {
 
-                    float time = i * clip.length / (float)frameCount;
-                    float dt = clip.length / (float)frameCount;
+                    float time = i * inputClip.length / (float)frameCount;
+                    float dt = inputClip.length / (float)frameCount;
 
-                    AnimationMode.SampleAnimationClip(testingPerson.gameObject, clip, time);
+                    AnimationMode.SampleAnimationClip(testingPerson.gameObject, inputClip, time);
 
-                    Vector3 pelvisPos = personAnimation.bonePelvis.localPosition;
+                    Vector3 hipPos = personAnimation.boneHip.localPosition;
 
-                    float speed = (pelvisPos - oldPelvisPos).magnitude / dt;
+                    float speed = (hipPos - oldHipPos).magnitude / dt;
 
-                    oldPelvisPos = pelvisPos;
+                    oldHipPos = hipPos;
 
                     keyframes[i] = new Keyframe(time, speed);
 
@@ -119,8 +119,9 @@ namespace PROJECT_A11.Develops.Common
 
             AnimationCurve speedCurve = new AnimationCurve(keyframes);
 
+
             AnimationUtility.SetEditorCurve(
-                clip,
+                outputClip,
                 EditorCurveBinding.FloatCurve(speedCurvePath, speedCurveType, speedCurveProperty),
                 speedCurve
             );

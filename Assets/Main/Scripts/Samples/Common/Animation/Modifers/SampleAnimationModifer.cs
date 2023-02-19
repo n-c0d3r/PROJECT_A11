@@ -14,10 +14,10 @@ namespace PROJECT_A11.Samples.Common
         Develops.Common.AnimationModifier
     {
 
-        public override void Apply(AnimationClip clip)
+        public override void Apply(AnimationClip inputClip, AnimationClip outputClip)
         {
 
-            base.Apply(clip);
+            base.Apply(inputClip, outputClip);
 
         }
 

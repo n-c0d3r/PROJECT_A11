@@ -20,26 +20,28 @@ namespace PROJECT_A11.Develops.Common
     {
 
         [System.Serializable]
-        public struct ModifierSlot
+        public struct ClipSlot
         {
 
-            public MonoScript Script;
-            public AnimationModifier Object;
+            public AnimationClip input;
+            public AnimationClip output;
 
         }
 
 
 
         [SerializeField]
-        private List<AnimationClip> m_Clips = new List<AnimationClip>();
-        public List<AnimationClip> clips { get { return m_Clips; } }
+        private List<ClipSlot> m_Clips = new List<ClipSlot>();
+        public List<ClipSlot> clipSlots { get { return m_Clips; } }
 
         [SerializeField]
-        private List<ModifierSlot> m_ModifierSlots = new List<ModifierSlot>();
-        public List<ModifierSlot> modifierSlots { get { return m_ModifierSlots; } }
+        private List<MonoScript> m_ModifierScripts = new List<MonoScript>();
+        public List<MonoScript> modifierScripts { get { return m_ModifierScripts; } }
 
         [SerializeField]
         private SerializedObject m_SerializedObject;
+
+        private Vector2 m_CurrentScrollPos;
 
 
 
@@ -48,43 +50,33 @@ namespace PROJECT_A11.Develops.Common
 
             m_SerializedObject.Update();
 
-            var modifierSlotsProperty = m_SerializedObject.FindProperty("m_ModifierSlots");
+            var modifierScriptsProperty = m_SerializedObject.FindProperty("m_ModifierScripts");
 
-            EditorGUILayout.PropertyField(modifierSlotsProperty, new GUIContent("Modifier Slots"), true);
+            EditorGUILayout.PropertyField(modifierScriptsProperty, new GUIContent("Modifier Scripts"), true);
 
             m_SerializedObject.ApplyModifiedProperties();
 
         }
 
-        private void ApplyModifierSlot(ModifierSlot slot, AnimationClip clip)
+        private void ApplyModifiers(ClipSlot clipSlot)
         {
 
-            AnimationModifier modifier;
+            AnimationClip previousOutput = clipSlot.input;
+            ClipSlot cs = clipSlot;
 
-            if (slot.Object != null)
+            foreach (var script in m_ModifierScripts)
             {
 
-                modifier = slot.Object;
+                AnimationModifier modifier = (AnimationModifier)CreateInstance(script.GetClass());
 
-            }
-            else
-            {
+                if (modifier.usePreviousOutputAsInput)
+                    cs.input = previousOutput;
+                else 
+                    cs.input = clipSlot.input;
 
-                modifier = (AnimationModifier)CreateInstance(slot.Script.GetClass());
+                modifier.Apply(clipSlot.input, (cs.output == null) ? cs.input : cs.output);
 
-            }
-
-            modifier.Apply(clip);
-
-        }
-
-        private void ApplyModifiers(AnimationClip clip)
-        {
-
-            foreach (var slot in m_ModifierSlots)
-            {
-
-                ApplyModifierSlot(slot, clip);
+                previousOutput = cs.output;
 
             }
 
@@ -97,9 +89,9 @@ namespace PROJECT_A11.Develops.Common
 
             m_SerializedObject.Update();
 
-            var clipsProperty = m_SerializedObject.FindProperty("m_Clips");
+            var clipSlotsProperty = m_SerializedObject.FindProperty("m_Clips");
 
-            EditorGUILayout.PropertyField(clipsProperty, new GUIContent("Clips"), true);
+            EditorGUILayout.PropertyField(clipSlotsProperty, new GUIContent("Clips"), true);
 
             m_SerializedObject.ApplyModifiedProperties();
 
@@ -110,10 +102,10 @@ namespace PROJECT_A11.Develops.Common
         private void ApplyAll()
         {
 
-            foreach (var clip in m_Clips)
+            foreach (var clipSlot in m_Clips)
             {
 
-                ApplyModifiers(clip);
+                ApplyModifiers(clipSlot);
 
             }
 
@@ -162,12 +154,16 @@ namespace PROJECT_A11.Develops.Common
         private void OnGUI()
         {
 
+            m_CurrentScrollPos = EditorGUILayout.BeginScrollView(m_CurrentScrollPos, GUILayout.Width(position.width), GUILayout.Height(position.height));
+
             DrawClipSettings();
             DrawModifiersSettings();
 
             EditorGUILayout.Space(10);
             
             DrawFunctionalities();
+
+            EditorGUILayout.EndScrollView();
 
         }
 

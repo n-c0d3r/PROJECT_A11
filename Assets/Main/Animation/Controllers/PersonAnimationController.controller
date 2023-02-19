@@ -120,49 +120,40 @@ BlendTree:
   m_Name: Blend Tree
   m_Childs:
   - serializedVersion: 2
-    m_Motion: {fileID: 8993902097722301239, guid: 4a3598273d9c6b94cade75f6f48767bf,
+    m_Motion: {fileID: -203655887218126122, guid: 268d40f9476ec404b827628b9472e139,
       type: 3}
     m_Threshold: 0.16666667
     m_Position: {x: 0, y: 1}
-    m_TimeScale: 0.75
+    m_TimeScale: 1
     m_CycleOffset: 0
-    m_DirectBlendParameter: Blend
+    m_DirectBlendParameter: GroundedMoveDirectionX
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: 8993902097722301239, guid: b83b405844af7d2439cd32751ca08e29,
+    m_Motion: {fileID: -203655887218126122, guid: b6703ef5514705046acd0148d7e0a496,
       type: 3}
-    m_Threshold: 0.3333333
-    m_Position: {x: -1, y: -1}
-    m_TimeScale: 1.25
+    m_Threshold: 0.3888889
+    m_Position: {x: 1, y: 0}
+    m_TimeScale: 1
     m_CycleOffset: 0
-    m_DirectBlendParameter: Blend
+    m_DirectBlendParameter: GroundedMoveDirectionX
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: 8993902097722301239, guid: cd52a7e1f871757458fa9da0e9ef5103,
+    m_Motion: {fileID: -203655887218126122, guid: 377b779f0be93f9489718c68bffc64a1,
       type: 3}
-    m_Threshold: 0.5
-    m_Position: {x: -1, y: 1}
-    m_TimeScale: 1.25
+    m_Threshold: 0.6111111
+    m_Position: {x: -1, y: 0}
+    m_TimeScale: 1
     m_CycleOffset: 0
-    m_DirectBlendParameter: Blend
+    m_DirectBlendParameter: GroundedMoveDirectionX
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: 8993902097722301239, guid: 563496d30479bf040afc2665cd691065,
-      type: 3}
-    m_Threshold: 0.6666666
-    m_Position: {x: 1, y: -1}
-    m_TimeScale: 1.25
-    m_CycleOffset: 0
-    m_DirectBlendParameter: Blend
-    m_Mirror: 0
-  - serializedVersion: 2
-    m_Motion: {fileID: 8993902097722301239, guid: bb5ed7cc234a9984ebdc6207a4066b8b,
+    m_Motion: {fileID: -203655887218126122, guid: e86cc1993d726bf488145ccea45c35fd,
       type: 3}
     m_Threshold: 0.8333333
-    m_Position: {x: 1, y: 1}
-    m_TimeScale: 1.25
+    m_Position: {x: 0, y: -1}
+    m_TimeScale: 1
     m_CycleOffset: 0
-    m_DirectBlendParameter: 
+    m_DirectBlendParameter: GroundedMoveDirectionX
     m_Mirror: 0
   m_BlendParameter: GroundedMoveDirectionX
   m_BlendParameterY: GroundedMoveDirectionZ
@@ -192,7 +183,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 8993902097722301239, guid: 6aa6c1a307582704d94de9d0a232337e,
+  m_Motion: {fileID: -203655887218126122, guid: beeaba5582f7d7e4fbaf7afb9d0d0f7b,
     type: 3}
   m_Tag: 
   m_SpeedParameter: 

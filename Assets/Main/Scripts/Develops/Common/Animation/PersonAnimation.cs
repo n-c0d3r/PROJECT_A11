@@ -13,12 +13,12 @@ namespace PROJECT_A11.Develops.Common
     {
 
         public float moveInputUpdatingSpeed = 5.0f;
-        public float moveSpeedUpdatingSpeed = 5.0f;
+        public float animationSpeedUpdatingSpeed = 5.0f;
 
 
         [Space(10)]
         [Header("Bone Settings")]
-        public Transform bonePelvis;
+        public Transform boneHip;
         public Transform boneFootL;
         public Transform boneFootR;
 
@@ -37,7 +37,7 @@ namespace PROJECT_A11.Develops.Common
         private Vector3 m_LocalMoveInput = Vector3.zero;
         [ReadOnly]
         [SerializeField]
-        private float m_MoveSpeed = 0.0f;
+        private float m_AnimationSpeed = 1.0f;
 
 
 
@@ -46,7 +46,7 @@ namespace PROJECT_A11.Develops.Common
 
 
 
-        private void UpdateGroundedMovementProperties()
+        private void UpdateGroundedMovement()
         {
 
             Vector3 localMoveInput = controller.input.targetMoveInput;
@@ -66,6 +66,31 @@ namespace PROJECT_A11.Develops.Common
                 &&  controller.currentMovement.groundedMovementMode == PersonController.GroundedMovementMode.Ordinary
             );
 
+
+
+            float groundedSpeed = animator.GetFloat("GroundedSpeed");
+
+            float currentSpeed = pawn.rigidbody.velocity.magnitude;
+
+            float targetSpeed = animator.speed;
+
+            if (currentSpeed <= 0.5f || groundedSpeed <= 0.5f)
+            {
+
+                targetSpeed = 1.0f;
+
+            }
+            else
+            {
+
+                targetSpeed = currentSpeed / groundedSpeed;
+
+            }
+
+            m_AnimationSpeed = Mathf.Lerp(m_AnimationSpeed, targetSpeed, Mathf.Clamp01(Time.deltaTime * animationSpeedUpdatingSpeed));
+
+            animator.speed = m_AnimationSpeed;
+
         }
 
 
@@ -84,7 +109,7 @@ namespace PROJECT_A11.Develops.Common
 
             base.Update();
 
-            UpdateGroundedMovementProperties();
+            UpdateGroundedMovement();
 
         }
 
