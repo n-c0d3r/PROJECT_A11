@@ -70,7 +70,7 @@ namespace PROJECT_A11.Develops.Common
 
                 AnimationMode.SampleAnimationClip(testingPerson.gameObject, inputClip, 0);
 
-                Vector3 oldHipPos = personAnimation.boneHip.localPosition;
+                Vector3 oldHipPos = personAnimation.boneHip.position;
 
                 for (int i = 1; i < frameCount; ++i)
                 {
@@ -80,13 +80,15 @@ namespace PROJECT_A11.Develops.Common
 
                     AnimationMode.SampleAnimationClip(testingPerson.gameObject, inputClip, time);
 
-                    Vector3 hipPos = personAnimation.boneHip.localPosition;
+                    Vector3 hipPos = personAnimation.boneHip.position;
 
                     float speed = (hipPos - oldHipPos).magnitude / dt;
 
                     oldHipPos = hipPos;
 
                     keyframes[i] = new Keyframe(time, speed);
+
+
 
                     if (i == 1)
                     {

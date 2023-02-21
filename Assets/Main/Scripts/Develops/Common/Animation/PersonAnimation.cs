@@ -62,8 +62,9 @@ namespace PROJECT_A11.Develops.Common
 
             animator.SetBool(
                 "IsGroundedMoving",
-                controller.currentMovement.environment == PersonController.Environment.Grounded
-                &&  controller.currentMovement.groundedMovementMode == PersonController.GroundedMovementMode.Ordinary
+                pawn.rigidbody.velocity.magnitude >= 0.02f
+            //controller.currentMovement.environment == PersonController.Environment.Grounded
+            //&&  controller.currentMovement.groundedMovementMode == PersonController.GroundedMovementMode.Ordinary
             );
 
 
@@ -93,6 +94,24 @@ namespace PROJECT_A11.Develops.Common
 
         }
 
+        private void UpdateBodyState()
+        {
+
+            animator.SetBool(
+                "IsSprintingBody",
+                controller.currentMovement.bodyState == PersonController.BodyState.Sprinting
+            );
+            animator.SetBool(
+                "IsCrouchingBody",
+                controller.currentMovement.bodyState == PersonController.BodyState.Crouching
+            );
+            animator.SetBool(
+                "IsOrdinaryBody",
+                controller.currentMovement.bodyState == PersonController.BodyState.Ordinary
+            );
+
+        }
+
 
 
         protected override void Awake()
@@ -110,6 +129,7 @@ namespace PROJECT_A11.Develops.Common
             base.Update();
 
             UpdateGroundedMovement();
+            UpdateBodyState();
 
         }
 

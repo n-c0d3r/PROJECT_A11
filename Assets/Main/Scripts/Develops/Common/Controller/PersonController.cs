@@ -324,6 +324,10 @@ namespace PROJECT_A11.Develops.Common
 
 
 
+            pawn.aimSettings.aimTargetTransform.position = pawn.headSettings.headTransform.position + pawn.headSettings.headTransform.forward;
+
+
+
             m_Input.targetDeltaLook = Vector2.zero;
 
         }

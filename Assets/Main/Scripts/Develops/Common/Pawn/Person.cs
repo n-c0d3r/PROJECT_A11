@@ -42,6 +42,14 @@ namespace PROJECT_A11.Develops.Common
 
         }
 
+        [System.Serializable]
+        public struct AimSettings
+        {
+
+            public Transform aimTargetTransform;
+
+        }
+
 
 
         public ShapeSettings shapeSettings = new ShapeSettings
@@ -55,6 +63,12 @@ namespace PROJECT_A11.Develops.Common
         {
 
             headOffset = new Vector3(0.0f, 1.5f, 0.0f)
+
+        };
+        public AimSettings aimSettings = new AimSettings
+        {
+
+
 
         };
 
