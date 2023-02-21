@@ -131,7 +131,7 @@ namespace PROJECT_A11.Develops.Common
         protected virtual void Update()
         {
 
-            UpdateHead();
+            //UpdateHead();
 
         }
         protected virtual void FixedUpdate()
