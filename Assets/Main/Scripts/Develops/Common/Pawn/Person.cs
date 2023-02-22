@@ -1,8 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 
 
@@ -13,14 +9,14 @@ namespace PROJECT_A11.Develops.Common
     [RequireComponent(typeof(CapsuleCollider))]
     [RequireComponent(typeof(PersonController))]
     [RequireComponent(typeof(PersonFSM))]
-    [RequireComponent(typeof(PersonAnimation))]
+    [RequireComponent(typeof(PersonAnimationController))]
     public class Person :
         Develops.Common.Pawn<
             Person,
             PersonController,
             PersonFSM,
             PersonBrain,
-            PersonAnimation
+            PersonAnimationController
         >
     {
 
@@ -113,7 +109,9 @@ namespace PROJECT_A11.Develops.Common
         public void UpdateHead()
         {
 
-            headSettings.headTransform.localPosition = headSettings.headOffset;
+            Matrix4x4 l2w = transform.localToWorldMatrix;
+
+            headSettings.headTransform.position = l2w * new Vector4(headSettings.headOffset.x, headSettings.headOffset.y, headSettings.headOffset.z, 1.0f);
 
         }
 

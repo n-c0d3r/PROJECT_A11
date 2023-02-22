@@ -42,7 +42,7 @@ namespace PROJECT_A11.Develops.Common
         {
 
             Matrix4x4 w2lMatrix = transform.parent.worldToLocalMatrix;
-            Matrix4x4 l2wMatrix = transform.parent.localToWorldMatrix;
+            Matrix4x4 l2wMatrix = transform.localToWorldMatrix;
 
             Vector3 lTPos = w2lMatrix * (new Vector4(targetTransform.position.x, targetTransform.position.y, targetTransform.position.z, 1.0f) + l2wMatrix * offset);
 

@@ -14,9 +14,12 @@ namespace PROJECT_A11.Develops.Common
     /// PlayablePersonBrain means that this pawn brain is controllable by player.
     /// </summary>
     [RequireComponent(typeof(PlayerInput))]
+    [RequireComponent(typeof(PersonViewController))]
     public class PlayablePersonBrain:
         PersonBrain
     {
+
+
 
         [Space(10)]
         [Header("Mouse Settings")]
@@ -26,6 +29,24 @@ namespace PROJECT_A11.Develops.Common
 
 
         private PlayerInput m_PlayerInput;
+
+
+
+        private PersonViewController m_ViewController;
+        public PersonViewController viewController
+        {
+            get
+            {
+
+                if (m_ViewController == null)
+                {
+
+                    m_ViewController = GetComponent<PersonViewController>();
+
+                }
+                return m_ViewController;
+            }
+        }
 
 
 
@@ -115,7 +136,18 @@ namespace PROJECT_A11.Develops.Common
 
             };
 
+            m_PlayerInput.actions["ChangeViewMode"].performed += ctx => {
+
+                if(viewController.mode == PersonViewController.Mode.FPV)
+                    viewController.ChangeViewMode(PersonViewController.Mode.TPV);
+                else
+                    viewController.ChangeViewMode(PersonViewController.Mode.FPV);
+
+            };
+
         }
+
+
 
         private void UpdateCursorState()
         {
@@ -147,6 +179,7 @@ namespace PROJECT_A11.Develops.Common
 
 
             m_PlayerInput = GetComponent<PlayerInput>();
+            m_ViewController = GetComponent<PersonViewController>();
 
 
 
