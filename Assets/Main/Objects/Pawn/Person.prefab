@@ -1173,7 +1173,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   movementSettings:
     maxGroundedSpeed_Ordinary: 5
-    maxGroundedSpeed_Sprinting: 7
+    maxGroundedSpeed_Sprinting: 6
     maxGroundedSpeed_Crouching: 3.5
     velocityUpdatingSpeed_Ordinary: 10
     velocityUpdatingSpeed_Sprinting: 10
@@ -1260,6 +1260,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveInputUpdatingSpeed: 3
   animationSpeedUpdatingSpeed: 5
+  maxAnimatorSpeed: 1.5
   boneHip: {fileID: 6360172330601233070}
   boneFootL: {fileID: 1175309761787816801}
   boneFootR: {fileID: 6133087615747017247}

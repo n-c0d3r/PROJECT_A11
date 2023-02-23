@@ -19,6 +19,7 @@ namespace PROJECT_A11.Develops.Common
         #region Fields and Private Properties
         public float moveInputUpdatingSpeed = 5.0f;
         public float animationSpeedUpdatingSpeed = 5.0f;
+        public float maxAnimatorSpeed = 3.0f;
 
 
         [Space(10)]
@@ -79,8 +80,7 @@ namespace PROJECT_A11.Develops.Common
             );
 
 
-
-            /*
+            
             float groundedSpeed = animator.GetFloat("GroundedSpeed");
 
             float currentSpeed = pawn.rigidbody.velocity.magnitude;
@@ -100,10 +100,9 @@ namespace PROJECT_A11.Develops.Common
 
             }
 
-            m_AnimationSpeed = Mathf.Lerp(m_AnimationSpeed, targetSpeed, Mathf.Clamp01(Time.deltaTime * animationSpeedUpdatingSpeed));
+            m_AnimationSpeed = Mathf.Clamp(Mathf.Lerp(m_AnimationSpeed, targetSpeed, Mathf.Clamp01(Time.deltaTime * animationSpeedUpdatingSpeed)), 0.0f, maxAnimatorSpeed);
 
             animator.speed = m_AnimationSpeed;
-            */
 
         }
 
