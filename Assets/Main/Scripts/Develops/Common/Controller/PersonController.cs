@@ -19,19 +19,27 @@ namespace PROJECT_A11.Develops.Common
         Develops.Common.PawnController<Person>
     {
 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        #region Nested Types
         [System.Serializable]
         public struct MovementSettings
         {
 
-            public float maxWalkingSpeed;
-            public float maxSprintingSpeed;
-            public float maxCrouchingSpeed;
+            public float maxGroundedSpeed_Ordinary;
+            public float maxGroundedSpeed_Sprinting;
+            public float maxGroundedSpeed_Crouching;
 
-            public float walkingVelocityUpdatingSpeed;
-            public float sprintingVelocityUpdatingSpeed;
-            public float crouchingVelocityUpdatingSpeed;
+            public float velocityUpdatingSpeed_Ordinary;
+            public float velocityUpdatingSpeed_Sprinting;
+            public float velocityUpdatingSpeed_Crouching;
 
-            public float jumpStartVelocity;
+            public float jumpStartUpVelocity;
+            public float jumpStartPlanarVelocity_Ordinary;
+            public float jumpStartPlanarVelocity_Sprinting;
+            public float jumpStartPlanarVelocity_Crouching;
 
             public Vector3 headRotatingAxis;
             public Vector3 selfRotatingAxis;
@@ -41,6 +49,7 @@ namespace PROJECT_A11.Develops.Common
 
             public float jumpMaxDelay;
             public float bhopMaxDelay;
+            public float bhopPlanarPowerMin;
 
             public Vector3 gravity;
 
@@ -116,32 +125,41 @@ namespace PROJECT_A11.Develops.Common
             public Vector2 look;
 
             public float jumpTime;
+            public float bhopPlanarPower;
 
         }
+        #endregion
 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
+        #region Fields and Private Properties
         [Space(10)]
         public MovementSettings movementSettings = new MovementSettings {
 
-            maxWalkingSpeed = 5.5f,
-            maxSprintingSpeed = 7.0f,
-            maxCrouchingSpeed = 4.0f,
+            maxGroundedSpeed_Ordinary = 4.0f,
+            maxGroundedSpeed_Sprinting = 6.0f,
+            maxGroundedSpeed_Crouching = 3.0f,
 
-            walkingVelocityUpdatingSpeed = 10.0f,
-            sprintingVelocityUpdatingSpeed = 20.0f,
-            crouchingVelocityUpdatingSpeed = 10.0f,
+            velocityUpdatingSpeed_Ordinary = 10.0f,
+            velocityUpdatingSpeed_Sprinting = 10.0f,
+            velocityUpdatingSpeed_Crouching = 10.0f,
 
-            jumpStartVelocity = 11.0f,
+            jumpStartUpVelocity = 9.0f,
+            jumpStartPlanarVelocity_Ordinary = 2.0f,
+            jumpStartPlanarVelocity_Sprinting = 3.0f,
+            jumpStartPlanarVelocity_Crouching = 1.0f,
 
             headRotatingAxis = Vector3.right,
             selfRotatingAxis = Vector3.up,
 
-            headLookMin = -90.0f,
-            headLookMax = 90.0f,
+            headLookMin = -80.0f,
+            headLookMax = 80.0f,
 
             jumpMaxDelay = 0.3f,
             bhopMaxDelay = 0.2f,
+            bhopPlanarPowerMin = 0.2f,
 
             gravity = Vector3.down * 20.0f
 
@@ -201,9 +219,13 @@ namespace PROJECT_A11.Develops.Common
         [SerializeField]
         private Quaternion m_DefaultSelfRotation;
         public Quaternion defaultSelfRotation { get { return m_DefaultSelfRotation; } }
+        #endregion
 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
+        #region Utility Getters
         public Vector3 up
         {
 
@@ -269,6 +291,93 @@ namespace PROJECT_A11.Develops.Common
 
 
 
+        public Matrix4x4 movementSpaceToWorldSpaceMatrix
+        {
+
+            get
+            {
+
+                Vector3 u = up;
+                Vector3 f = forward;
+                Vector3 r = right;
+
+                return new Matrix4x4(
+                    new Vector4(r.x, r.y, r.z, 0.0f),
+                    new Vector4(u.x, u.y, u.z, 0.0f),
+                    new Vector4(f.x, f.y, f.z, 0.0f),
+                    new Vector4(transform.position.x, transform.position.y, transform.position.z, 1.0f)
+                );
+            }
+
+        }
+        public Matrix4x4 worldSpaceToMovementSpaceMatrix
+        {
+
+            get
+            {
+
+                return movementSpaceToWorldSpaceMatrix.inverse;
+            }
+
+        }
+
+
+
+        public float maxGroundedSpeed
+        {
+
+            get
+            {
+
+                if (input.targetBodyState == BodyState.Ordinary)
+                    return movementSettings.maxGroundedSpeed_Ordinary;
+                if (input.targetBodyState == BodyState.Crouching)
+                    return movementSettings.maxGroundedSpeed_Crouching;
+
+                return movementSettings.maxGroundedSpeed_Sprinting;
+
+            }
+
+        }
+        public float maxGroundedVelUpdatingSpeed
+        {
+
+            get
+            {
+
+                if (input.targetBodyState == BodyState.Ordinary)
+                    return movementSettings.velocityUpdatingSpeed_Ordinary;
+                if (input.targetBodyState == BodyState.Crouching)
+                    return movementSettings.velocityUpdatingSpeed_Crouching;
+
+                return movementSettings.velocityUpdatingSpeed_Sprinting;
+
+            }
+
+        }
+        public float jumpStartPlanarVelocity
+        {
+
+            get
+            {
+
+                if (input.targetBodyState == BodyState.Ordinary)
+                    return movementSettings.jumpStartPlanarVelocity_Ordinary;
+                if (input.targetBodyState == BodyState.Crouching)
+                    return movementSettings.jumpStartPlanarVelocity_Crouching;
+
+                return movementSettings.jumpStartPlanarVelocity_Sprinting;
+
+            }
+
+        }
+        #endregion
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        #region Required Components
         private PersonBrain m_Brain;
         public PersonBrain brain
         {
@@ -298,9 +407,30 @@ namespace PROJECT_A11.Develops.Common
             }
 
         }
+        #endregion
 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        #region Utility Methods  
+        public Vector3 PointToMovementSpace(Vector3 point)
+        {
 
+            return worldSpaceToMovementSpaceMatrix * new Vector4(point.x, point.y, point.z, 1.0f);
+        }
+        public Vector3 VectorToMovementSpace(Vector3 v)
+        {
+
+            return worldSpaceToMovementSpaceMatrix * new Vector4(v.x, v.y, v.z, 0.0f);
+        }
+        #endregion
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        #region Controller Methods
         private void UpdateInput()
         {
 
@@ -310,7 +440,7 @@ namespace PROJECT_A11.Develops.Common
 
 
 
-        private void Rotate()
+        private void UpdateRotation()
         {
 
             /// Rotates
@@ -389,9 +519,6 @@ namespace PROJECT_A11.Develops.Common
             /// Jumps
             {
 
-                if(m_Input.targetEnvironment == Environment.InAir)
-                    m_CurrentMovement.jumpTime += Time.fixedDeltaTime;
-
                 if (
                     m_Input.targetEnvironment == Environment.InAir
                     && m_CurrentMovement.environment == Environment.Grounded
@@ -404,6 +531,13 @@ namespace PROJECT_A11.Develops.Common
                     ImmediatelyJump();
 
                     isJumped = true;
+
+                }
+                else
+                if (m_Input.targetEnvironment == Environment.InAir)
+                {
+
+                    m_CurrentMovement.jumpTime += Time.fixedDeltaTime;
 
                 }
 
@@ -422,17 +556,9 @@ namespace PROJECT_A11.Develops.Common
 
                     Vector3 targetMoveDirection = input.targetMoveDirection;
 
-                    float targetSpeed = movementSettings.maxSprintingSpeed;
-                    if (input.targetBodyState == BodyState.Ordinary)
-                        targetSpeed = movementSettings.maxWalkingSpeed;
-                    if (input.targetBodyState == BodyState.Crouching)
-                        targetSpeed = movementSettings.maxCrouchingSpeed;
+                    float targetSpeed = maxGroundedSpeed;
 
-                    float velocityUpdatingSpeed = movementSettings.sprintingVelocityUpdatingSpeed;
-                    if (input.targetBodyState == BodyState.Ordinary)
-                        velocityUpdatingSpeed = movementSettings.walkingVelocityUpdatingSpeed;
-                    if (input.targetBodyState == BodyState.Crouching)
-                        velocityUpdatingSpeed = movementSettings.crouchingVelocityUpdatingSpeed;
+                    float velocityUpdatingSpeed = maxGroundedVelUpdatingSpeed;
 
                     Vector3 targetVelocity = targetSpeed * targetMoveDirection;
 
@@ -494,25 +620,40 @@ namespace PROJECT_A11.Develops.Common
         protected virtual void ImmediatelyJump()
         {
 
+            m_CurrentMovement.bhopPlanarPower = (m_CurrentMovement.jumpTime == 0.0f || m_CurrentMovement.jumpTime > movementSettings.bhopMaxDelay) ? movementSettings.bhopPlanarPowerMin : (
+            
+                (1.0f - Mathf.Clamp01(m_CurrentMovement.jumpTime / movementSettings.bhopMaxDelay)) * (1.0f - movementSettings.bhopPlanarPowerMin) + movementSettings.bhopPlanarPowerMin
+
+            );
+
             m_Input.targetEnvironment = Environment.Grounded;
 
             m_CurrentMovement.jumpTime = movementSettings.jumpMaxDelay * 2.0f;
 
             Vector3 currVelocity = pawn.rigidbody.velocity;
-            Vector3 targetVelocity = currVelocity;
 
-            targetVelocity.y = Mathf.Max(currVelocity.y, movementSettings.jumpStartVelocity);
+            Vector3 movementSpaceCurrVel = worldSpaceToMovementSpaceMatrix * currVelocity;
+            movementSpaceCurrVel.y = 0.0f;
+            Vector3 movementSpaceMoveVel = worldSpaceToMovementSpaceMatrix * (input.targetMoveInput.x * right + input.targetMoveInput.y * forward) * jumpStartPlanarVelocity;
+            movementSpaceMoveVel.y = 0.0f;
+            movementSpaceMoveVel *= m_CurrentMovement.bhopPlanarPower;
 
-            pawn.rigidbody.velocity = targetVelocity;
+            movementSpaceMoveVel += movementSpaceCurrVel;
 
-            //Debug.Log(targetVelocity);
+            Vector3 planarMoveVel = movementSpaceToWorldSpaceMatrix * movementSpaceMoveVel;
 
-            //pawn.rigidbody.AddForce(pawn.rigidbody.mass * (targetVelocity - currVelocity) / Time.fixedDeltaTime);
+            Vector3 jumpVel = planarMoveVel + up * movementSettings.jumpStartUpVelocity;
+
+            pawn.rigidbody.velocity = jumpVel;
 
         }
+        #endregion
 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
+        #region Controller Events
         public virtual void OnStartGrounded()
         {
 
@@ -520,7 +661,7 @@ namespace PROJECT_A11.Develops.Common
 
             m_Input.targetInAirMovementMode = InAirMovementMode.None;
 
-            m_CurrentMovement.jumpTime = 0.0f;
+            //m_CurrentMovement.jumpTime = 0.0f;
 
             if (m_Input.targetMoveInput != Vector2.zero)
             {
@@ -674,8 +815,8 @@ namespace PROJECT_A11.Develops.Common
         public virtual void OnStartJumping()
         {
 
-            m_Input.targetEnvironment = Environment.InAir;
             m_CurrentMovement.jumpTime = 0.0f;
+            m_Input.targetEnvironment = Environment.InAir;
 
             brain.OnStartJumping();
 
@@ -690,9 +831,13 @@ namespace PROJECT_A11.Develops.Common
             brain.OnLooking(input);
 
         }
+        #endregion
 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
+        #region MonoBehavior Events
         protected override void Awake()
         {
 
@@ -712,7 +857,7 @@ namespace PROJECT_A11.Develops.Common
         {
 
             UpdateInput();
-            Rotate();
+            UpdateRotation();
 
         }
         protected virtual void FixedUpdate()
@@ -723,8 +868,11 @@ namespace PROJECT_A11.Develops.Common
             ApplyInput();
 
         }
+        #endregion
 
-
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #if UNITY_EDITOR
         private void OnDrawGizmos()

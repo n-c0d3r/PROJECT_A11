@@ -1172,19 +1172,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movementSettings:
-    maxWalkingSpeed: 4
-    maxSprintingSpeed: 6
-    maxCrouchingSpeed: 2.7
-    walkingVelocityUpdatingSpeed: 10
-    sprintingVelocityUpdatingSpeed: 10
-    crouchingVelocityUpdatingSpeed: 10
-    jumpStartVelocity: 8
+    maxGroundedSpeed_Ordinary: 5
+    maxGroundedSpeed_Sprinting: 7
+    maxGroundedSpeed_Crouching: 3.5
+    velocityUpdatingSpeed_Ordinary: 10
+    velocityUpdatingSpeed_Sprinting: 10
+    velocityUpdatingSpeed_Crouching: 10
+    jumpStartUpVelocity: 9
+    jumpStartPlanarVelocity_Ordinary: 5
+    jumpStartPlanarVelocity_Sprinting: 7
+    jumpStartPlanarVelocity_Crouching: 3.5
     headRotatingAxis: {x: 1, y: 0, z: 0}
     selfRotatingAxis: {x: 0, y: 1, z: 0}
     headLookMin: -80
     headLookMax: 80
-    jumpMaxDelay: 0.15
-    bhopMaxDelay: 0.1
+    jumpMaxDelay: 0.3
+    bhopMaxDelay: 0.2
+    bhopPlanarPowerMin: 0.2
     gravity: {x: 0, y: -20, z: 0}
   bottomCircleColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   bottomCircleRadius: 0.55
@@ -1206,6 +1210,7 @@ MonoBehaviour:
     velocity: {x: 0, y: 0, z: 0}
     look: {x: 0, y: 0}
     jumpTime: 0
+    bhopPlanarPower: 0
   m_DefaultHeadRotation: {x: 0, y: 0, z: 0, w: 0}
   m_DefaultSelfRotation: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &7569016800543778858

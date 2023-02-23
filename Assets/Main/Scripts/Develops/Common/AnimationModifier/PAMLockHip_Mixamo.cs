@@ -19,6 +19,11 @@ namespace PROJECT_A11.Develops.Common
         PAMLockHip
     {
 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        #region Methods
         public override void Apply(AnimationClip inputClip, AnimationClip outputClip)
         {
 
@@ -34,13 +39,14 @@ namespace PROJECT_A11.Develops.Common
             lockPositionX = true;
             lockPositionY = false;
             lockPositionZ = true;
-            lockRotation = false;
+            lockRotation = true;
 
             defaultKeyIndex = 0;
 
             base.Apply(inputClip, outputClip);
 
         }
+        #endregion
 
     }
 

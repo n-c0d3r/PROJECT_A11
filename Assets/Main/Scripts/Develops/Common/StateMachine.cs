@@ -11,13 +11,18 @@ namespace PROJECT_A11.Develops.Common
 {
 
     /// <summary>
-    /// A state machine is a behavior model.
-    /// It consists of finite number of states and performs state transitions and state actions. 
+    /// A state machine is a behavior model that consists of states and performs state transitions and state actions. 
     /// </summary>
     public class StateMachine<StateMachineType> : 
         MonoBehaviour
         where StateMachineType : StateMachine<StateMachineType>
     {
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        #region Fields
         [SerializeField]
         private State<StateMachineType> m_StartState;
         public State<StateMachineType> startState { set { m_StartState = value; }  get { return m_StartState; } }
@@ -25,9 +30,13 @@ namespace PROJECT_A11.Develops.Common
 
         private State<StateMachineType> m_CurrentState;
         public State<StateMachineType> currentState { get { return m_CurrentState; } }
+        #endregion
 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
+        #region Methods
         /// <summary>
         /// Regularly checks if the state machine need to move to another state.
         /// </summary>
@@ -71,9 +80,13 @@ namespace PROJECT_A11.Develops.Common
             m_CurrentState.StartPerforming();
 
         }
+        #endregion
 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
+        #region MonoBehavior Events
         protected virtual void Awake()
         {
 
@@ -111,6 +124,7 @@ namespace PROJECT_A11.Develops.Common
             CheckPotentialTransition();
 
         }
+        #endregion
 
     }
 
