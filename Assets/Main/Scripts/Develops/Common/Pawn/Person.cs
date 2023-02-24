@@ -1,6 +1,5 @@
 using UnityEngine;
-
-
+using UnityEngine.Assertions;
 
 namespace PROJECT_A11.Develops.Common
 {
@@ -33,7 +32,10 @@ namespace PROJECT_A11.Develops.Common
         {
 
             public float radius;
-            public float height;
+
+            public Transform centerTransform;
+            public Transform[] topTransforms;
+            public Transform[] bottomTransforms;
 
         }
 
@@ -63,8 +65,7 @@ namespace PROJECT_A11.Develops.Common
         public ShapeSettings shapeSettings = new ShapeSettings
         {
 
-            radius = 0.5f,
-            height = 2.0f
+            radius = 0.5f
 
         };
         public HeadSettings headSettings = new HeadSettings
@@ -84,7 +85,7 @@ namespace PROJECT_A11.Develops.Common
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+        
         #region Required Components
         private Rigidbody m_Rigidbody;
         public Rigidbody rigidbody
@@ -117,13 +118,179 @@ namespace PROJECT_A11.Develops.Common
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        #region Utility Getters
+        public float bottomDistance
+        {
+
+            get
+            {
+
+#if UNITY_EDITOR
+                if (shapeSettings.bottomTransforms == null) return 0.0f;
+                if (shapeSettings.bottomTransforms.Length == 0) return 0.0f;
+                if (shapeSettings.centerTransform == null) return 0.0f;
+#endif
+
+                float bottom = 0.0f;
+
+                foreach (Transform bottomTransform in shapeSettings.bottomTransforms)
+                {
+
+                    bottom = Mathf.Max(bottom, Vector3.Dot((bottomTransform.position - shapeSettings.centerTransform.position), -controller.up));
+
+                }
+
+                return bottom;
+
+            }
+
+        }
+        public float topDistance
+        {
+
+            get
+            {
+
+#if UNITY_EDITOR
+                if (shapeSettings.topTransforms == null) return 0.0f;
+                if (shapeSettings.topTransforms.Length == 0) return 0.0f;
+                if (shapeSettings.centerTransform == null) return 0.0f;
+#endif
+
+                float top = 0.0f;
+
+                foreach (Transform topTransform in shapeSettings.topTransforms)
+                {
+
+                    top = Mathf.Max(top, Vector3.Dot((topTransform.position - shapeSettings.centerTransform.position), controller.up));
+
+                }
+
+                return top;
+
+            }
+
+        }
+
+        public Vector3 bottomPoint
+        {
+
+            get
+            {
+
+#if UNITY_EDITOR
+                if (shapeSettings.centerTransform == null) return transform.position;
+#endif
+
+                return shapeSettings.centerTransform.position - controller.up * bottomDistance;
+            }
+
+        }
+        public Vector3 topPoint
+        {
+
+            get
+            {
+
+#if UNITY_EDITOR
+                if (shapeSettings.centerTransform == null) return transform.position;
+#endif
+
+                return shapeSettings.centerTransform.position + controller.up * topDistance;
+            }
+
+        }
+        #endregion
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        #region Utility Methods
+        public float BottomDistance(Transform[] bottomTransforms)
+        {
+
+#if UNITY_EDITOR
+            if (bottomTransforms == null) return 0.0f;
+            if (bottomTransforms.Length == 0) return 0.0f;
+            if (shapeSettings.centerTransform == null) return 0.0f;
+#endif
+
+            float bottom = 0.0f;
+
+            foreach (Transform bottomTransform in bottomTransforms)
+            {
+
+                bottom = Mathf.Max(bottom, Vector3.Dot((bottomTransform.position - shapeSettings.centerTransform.position), -controller.up));
+
+            }
+
+            return bottom;
+        }
+        public float TopDistance(Transform[] topTransforms)
+        {
+
+#if UNITY_EDITOR
+            if (topTransforms == null) return 0.0f;
+            if (topTransforms.Length == 0) return 0.0f;
+            if (shapeSettings.centerTransform == null) return 0.0f;
+#endif
+
+            float top = 0.0f;
+
+            foreach (Transform topTransform in topTransforms)
+            {
+
+                top = Mathf.Max(top, Vector3.Dot((topTransform.position - shapeSettings.centerTransform.position), controller.up));
+
+            }
+
+            return top;
+        }
+
+        public Vector3 BottomPoint(Transform[] bottomTransforms)
+        {
+
+#if UNITY_EDITOR
+            if (shapeSettings.centerTransform == null) return transform.position;
+#endif
+
+            return shapeSettings.centerTransform.position - controller.up * BottomDistance(bottomTransforms);
+
+        }
+        public Vector3 TopPoint(Transform[] topTransforms)
+        {
+
+#if UNITY_EDITOR
+            if (shapeSettings.centerTransform == null) return transform.position;
+#endif
+
+            return shapeSettings.centerTransform.position + controller.up * TopDistance(topTransforms);
+        }
+        #endregion
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
         #region Methods
         public void UpdateShape()
         {
 
-            capsuleCollider.height = shapeSettings.height;
+#if UNITY_EDITOR
+            if (shapeSettings.centerTransform == null) return;
+#endif
+
+            float top = topDistance;
+            float bottom = bottomDistance;
+            float center = Vector3.Dot((shapeSettings.centerTransform.position - transform.position), controller.up);
+
+            float height = top + bottom;
+
+            capsuleCollider.height = height;
             capsuleCollider.radius = shapeSettings.radius;
-            capsuleCollider.center = Vector3.up * shapeSettings.height * 0.5f;
+
+            capsuleCollider.center = Vector3.up * (center - bottom + height * 0.5f);
 
         }
         public void UpdateHead()
@@ -156,6 +323,7 @@ namespace PROJECT_A11.Develops.Common
 
 
         }
+
         protected virtual void FixedUpdate()
         {
 

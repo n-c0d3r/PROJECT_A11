@@ -20,6 +20,8 @@ namespace PROJECT_A11.Develops.Common
         public float moveInputUpdatingSpeed = 5.0f;
         public float animationSpeedUpdatingSpeed = 5.0f;
         public float maxAnimatorSpeed = 3.0f;
+        public float groundHeightUpdatingSpeed = 3.0f;
+        public float groundHeightOfHighestFalling = 4.0f;
 
 
         [Space(10)]
@@ -40,10 +42,13 @@ namespace PROJECT_A11.Develops.Common
         [Header("Read-only Details")]
         [ReadOnly]
         [SerializeField]
-        private Vector3 m_LocalMoveInput = Vector3.zero;
+        private Vector3 m_MoveInput = Vector3.zero;
         [ReadOnly]
         [SerializeField]
         private float m_AnimationSpeed = 1.0f;
+        [ReadOnly]
+        [SerializeField]
+        private float m_GroundHeight = 0.0f;
         #endregion
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -63,27 +68,34 @@ namespace PROJECT_A11.Develops.Common
         private void UpdateGroundedMovement()
         {
 
-            Vector3 localMoveInput = controller.input.targetMoveInput;
+            Vector3 moveInput = controller.input.targetMoveInput;
 
-            m_LocalMoveInput = Vector3.Lerp(m_LocalMoveInput, localMoveInput, Mathf.Clamp01(Time.deltaTime * moveInputUpdatingSpeed));
-
-
-
-            animator.SetFloat("GroundedMoveDirectionX", m_LocalMoveInput.x);
-            animator.SetFloat("GroundedMoveDirectionZ", m_LocalMoveInput.y);
+            m_MoveInput = Vector3.Lerp(m_MoveInput, moveInput, Mathf.Clamp01(Time.deltaTime * moveInputUpdatingSpeed));
 
 
+
+            animator.SetFloat("MoveInputX", m_MoveInput.x);
+            animator.SetFloat("MoveInputY", m_MoveInput.y);
+
+
+
+            Vector3 currentPlanarVel = pawn.rigidbody.velocity;
+            currentPlanarVel.y = 0.0f;
+
+            float currentSpeed = currentPlanarVel.magnitude;
+
+
+
+            bool isMoving = (currentSpeed >= 1.0f) || (controller.input.targetGroundedMovementMode != PersonController.GroundedMovementMode.None);
 
             animator.SetBool(
-                "IsGroundedMoving",
-                pawn.rigidbody.velocity.magnitude >= 0.02f
+                "IsMoving",
+                isMoving
             );
 
 
             
             float groundedSpeed = animator.GetFloat("GroundedSpeed");
-
-            float currentSpeed = pawn.rigidbody.velocity.magnitude;
 
             float targetSpeed = animator.speed;
 
@@ -106,6 +118,14 @@ namespace PROJECT_A11.Develops.Common
 
         }
 
+        private void UpdateInAirMovement()
+        {
+
+            m_AnimationSpeed = Mathf.Clamp(Mathf.Lerp(m_AnimationSpeed, 1.0f, Mathf.Clamp01(Time.deltaTime * animationSpeedUpdatingSpeed)), 0.0f, maxAnimatorSpeed);
+
+            animator.speed = m_AnimationSpeed;
+        }
+
         private void UpdateBodyState()
         {
 
@@ -120,6 +140,21 @@ namespace PROJECT_A11.Develops.Common
             animator.SetBool(
                 "IsOrdinaryBody",
                 controller.currentMovement.bodyState == PersonController.BodyState.Ordinary
+            );
+
+        }
+
+        private void UpdateEnvironment()
+        {
+
+            animator.SetBool(
+                "IsGrounded",
+                controller.currentMovement.environment == PersonController.Environment.Grounded
+            );
+
+            animator.SetBool(
+                "IsInAir",
+                controller.currentMovement.environment == PersonController.Environment.InAir
             );
 
         }
@@ -144,10 +179,35 @@ namespace PROJECT_A11.Develops.Common
 
             base.Update();
 
-            UpdateGroundedMovement();
+            UpdateEnvironment();
+
+
+            
+            switch(controller.currentMovement.environment)
+            {
+
+                case PersonController.Environment.Grounded:
+                    UpdateGroundedMovement();
+                    break;
+
+                case PersonController.Environment.InAir:
+                    UpdateInAirMovement();
+                    break;
+
+            }
+
+
+
+            m_GroundHeight = Mathf.Lerp(m_GroundHeight, controller.currentMovement.groundHeight, Mathf.Clamp01(Time.deltaTime * groundHeightUpdatingSpeed));
+            animator.SetFloat("GroundHeight", m_GroundHeight);
+            animator.SetFloat("FallingStrength", m_GroundHeight / groundHeightOfHighestFalling);
+
+
+
             UpdateBodyState();
 
         }
+
         #endregion
 
     }

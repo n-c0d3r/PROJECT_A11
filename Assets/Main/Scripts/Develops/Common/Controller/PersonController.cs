@@ -127,6 +127,8 @@ namespace PROJECT_A11.Develops.Common
             public float jumpTime;
             public float bhopPlanarPower;
 
+            public float groundHeight;
+
         }
         #endregion
 
@@ -206,7 +208,9 @@ namespace PROJECT_A11.Develops.Common
             velocity = Vector3.zero,
             look = Vector2.zero,
 
-            jumpTime = 0.0f
+            jumpTime = 0.0f,
+
+            groundHeight = 0.0f
 
         };
         public Movement currentMovement { get { return m_CurrentMovement; } }
@@ -490,6 +494,30 @@ namespace PROJECT_A11.Develops.Common
             /// Update velocity,...
             m_CurrentMovement.velocity = pawn.rigidbody.velocity;
 
+
+
+            /// Update Ground Height
+            RaycastHit groundHit;
+
+            if (m_CurrentMovement.environment == Environment.InAir) { 
+
+                if (Physics.Raycast(transform.position + 0.1f * Vector3.up, Vector3.down, out groundHit, Mathf.Infinity, groundChecker.mask))
+                {
+
+                    float groundHeight = (transform.position - groundHit.point).y;
+
+                    m_CurrentMovement.groundHeight = groundHeight;
+
+                } 
+
+            }
+            else
+            {
+
+                m_CurrentMovement.groundHeight = 0.0f;
+
+            }
+
         }
 
 
@@ -642,7 +670,7 @@ namespace PROJECT_A11.Develops.Common
 
             Vector3 planarMoveVel = movementSpaceToWorldSpaceMatrix * movementSpaceMoveVel;
 
-            Vector3 jumpVel = planarMoveVel + up * movementSettings.jumpStartUpVelocity;
+            Vector3 jumpVel = planarMoveVel + Vector3.up * movementSettings.jumpStartUpVelocity;
 
             pawn.rigidbody.velocity = jumpVel;
 

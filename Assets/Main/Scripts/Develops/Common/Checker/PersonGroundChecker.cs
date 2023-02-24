@@ -22,7 +22,7 @@ namespace PROJECT_A11.Develops.Common
         #region Fields and Private Properties
         public float radius = 0.5f;
         public Vector3 offset = Vector3.up * 0.5f;
-        public Vector3 direction = Vector3.down;
+        public float distance = 0.1f;
         public LayerMask mask;
 
 #if UNITY_EDITOR
@@ -59,8 +59,29 @@ namespace PROJECT_A11.Develops.Common
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         #region Required Components
+        private Person m_Person;
+        public Person person { 
+            get { 
+
+                if(m_Person == null)
+                    m_Person = GetComponent<Person>();
+
+                return m_Person; 
+            } 
+        }
+
         private PersonController m_Controller;
-        public PersonController controller { get { return m_Controller; } }
+        public PersonController controller
+        {
+            get
+            {
+
+                if (m_Controller == null)
+                    m_Controller = GetComponent<PersonController>();
+
+                return m_Controller;
+            }
+        }
         #endregion
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -73,7 +94,7 @@ namespace PROJECT_A11.Develops.Common
 
             RaycastHit hit;
 
-            if (Physics.SphereCast(transform.position + offset - direction.normalized * 0.001f, radius, direction, out hit, 0.05f, mask))
+            if (Physics.SphereCast(transform.position + offset + Vector3.up * 0.1f, radius, Vector3.down, out hit, distance, mask))
             {
 
                 m_CheckedPosition = hit.point;
@@ -100,6 +121,7 @@ namespace PROJECT_A11.Develops.Common
         private void Awake()
         {
 
+            m_Person = GetComponent<Person>();
             m_Controller = GetComponent<PersonController>();
 
         }
