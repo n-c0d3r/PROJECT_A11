@@ -20,8 +20,8 @@ namespace PROJECT_A11.Develops.Common
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         #region Fields and Private Properties
-        public float radius = 0.5f;
-        public Vector3 offset = Vector3.up * 0.5f;
+        public float radius = 0.4f;
+        public Vector3 offset = Vector3.up * 0.35f;
         public float distance = 0.1f;
         public LayerMask mask;
 
@@ -31,7 +31,7 @@ namespace PROJECT_A11.Develops.Common
         public Color checkingSphereColor = Color.green;
         public float checkingSphereThickness = 2.0f;
         public Color checkedSphereColor = Color.magenta;
-        public float checkedSphereRadius = 0.2f;
+        public float checkedSphereRadius = 0.08f;
         public float checkedSphereThickness = 2.0f;
 #endif
 

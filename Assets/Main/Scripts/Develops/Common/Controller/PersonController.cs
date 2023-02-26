@@ -140,18 +140,18 @@ namespace PROJECT_A11.Develops.Common
         [Space(10)]
         public MovementSettings movementSettings = new MovementSettings {
 
-            maxGroundedSpeed_Ordinary = 4.0f,
-            maxGroundedSpeed_Sprinting = 6.0f,
-            maxGroundedSpeed_Crouching = 3.0f,
+            maxGroundedSpeed_Ordinary = 5.0f,
+            maxGroundedSpeed_Sprinting = 6.5f,
+            maxGroundedSpeed_Crouching = 3.5f,
 
             velocityUpdatingSpeed_Ordinary = 10.0f,
             velocityUpdatingSpeed_Sprinting = 10.0f,
             velocityUpdatingSpeed_Crouching = 10.0f,
 
             jumpStartUpVelocity = 9.0f,
-            jumpStartPlanarVelocity_Ordinary = 2.0f,
-            jumpStartPlanarVelocity_Sprinting = 3.0f,
-            jumpStartPlanarVelocity_Crouching = 1.0f,
+            jumpStartPlanarVelocity_Ordinary = 5.0f,
+            jumpStartPlanarVelocity_Sprinting = 6.0f,
+            jumpStartPlanarVelocity_Crouching = 3.5f,
 
             headRotatingAxis = Vector3.right,
             selfRotatingAxis = Vector3.up,
@@ -161,7 +161,7 @@ namespace PROJECT_A11.Develops.Common
 
             jumpMaxDelay = 0.3f,
             bhopMaxDelay = 0.2f,
-            bhopPlanarPowerMin = 0.2f,
+            bhopPlanarPowerMin = 0.15f,
 
             gravity = Vector3.down * 20.0f
 
@@ -173,7 +173,7 @@ namespace PROJECT_A11.Develops.Common
         [Space(10)]
         [Header("Debug Settings")]
         public Color bottomCircleColor = Color.gray;
-        public float bottomCircleRadius = 1.0f;
+        public float bottomCircleRadius = 0.55f;
         public float bottomCircleThickness = 2.0f;
 #endif
 
@@ -435,16 +435,14 @@ namespace PROJECT_A11.Develops.Common
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         #region Controller Methods
-        private void UpdateInput()
+        private void UpdateInput(float deltaTime)
         {
 
             m_Input.targetMoveDirection = forward * m_Input.targetMoveInput.y + right * m_Input.targetMoveInput.x;
 
         }
 
-
-
-        private void UpdateRotation()
+        private void UpdateRotation(float deltaTime)
         {
 
             /// Rotates
@@ -470,7 +468,7 @@ namespace PROJECT_A11.Develops.Common
 
 
 
-        private void UpdateCurrentMovement()
+        private void UpdateCurrentMovement(float deltaTime)
         {
 
             /// Update Environment
@@ -520,9 +518,7 @@ namespace PROJECT_A11.Develops.Common
 
         }
 
-
-
-        private void ApplyInput()
+        private void ApplyMovement(float deltaTime)
         {
             
             switch (m_CurrentMovement.environment)
@@ -556,7 +552,7 @@ namespace PROJECT_A11.Develops.Common
                 )
                 {
 
-                    ImmediatelyJump();
+                    ImmediatelyJump(deltaTime);
 
                     isJumped = true;
 
@@ -565,7 +561,7 @@ namespace PROJECT_A11.Develops.Common
                 if (m_Input.targetEnvironment == Environment.InAir)
                 {
 
-                    m_CurrentMovement.jumpTime += Time.fixedDeltaTime;
+                    m_CurrentMovement.jumpTime += deltaTime;
 
                 }
 
@@ -590,9 +586,9 @@ namespace PROJECT_A11.Develops.Common
 
                     Vector3 targetVelocity = targetSpeed * targetMoveDirection;
 
-                    Vector3 newVelocity = Vector3.Lerp(currVelocity, targetVelocity, Mathf.Clamp01(Time.fixedDeltaTime * velocityUpdatingSpeed));
+                    Vector3 newVelocity = Vector3.Lerp(currVelocity, targetVelocity, Mathf.Clamp01(deltaTime * velocityUpdatingSpeed));
 
-                    pawn.rigidbody.AddForce(pawn.rigidbody.mass * (newVelocity - currVelocity) / Time.fixedDeltaTime);
+                    pawn.rigidbody.AddForce(pawn.rigidbody.mass * (newVelocity - currVelocity) / deltaTime);
 
 
 
@@ -619,7 +615,7 @@ namespace PROJECT_A11.Develops.Common
 
                     Vector3 targetVelocity = (Quaternion.Euler(movementSettings.selfRotatingAxis * input.targetDeltaLook_forFixedUpdate.x) * currVelocity);
 
-                    pawn.rigidbody.AddForce(pawn.rigidbody.mass * (targetVelocity - currVelocity) / Time.fixedDeltaTime);
+                    pawn.rigidbody.AddForce(pawn.rigidbody.mass * (targetVelocity - currVelocity) / deltaTime);
 
                 }
 
@@ -636,16 +632,14 @@ namespace PROJECT_A11.Develops.Common
 
         }
 
-        private void ApplyGravity()
+        private void ApplyGravity(float deltaTime)
         {
 
             pawn.rigidbody.AddForce(pawn.rigidbody.mass * (movementSettings.gravity - Physics.gravity));
 
         }
 
-
-
-        protected virtual void ImmediatelyJump()
+        protected virtual void ImmediatelyJump(float deltaTime)
         {
 
             m_CurrentMovement.bhopPlanarPower = (m_CurrentMovement.jumpTime == 0.0f || m_CurrentMovement.jumpTime > movementSettings.bhopMaxDelay) ? movementSettings.bhopPlanarPowerMin : (
@@ -884,16 +878,16 @@ namespace PROJECT_A11.Develops.Common
         protected virtual void Update()
         {
 
-            UpdateInput();
-            UpdateRotation();
+            UpdateInput(Time.deltaTime);
+            UpdateRotation(Time.deltaTime);
 
         }
         protected virtual void FixedUpdate()
         {
 
-            UpdateCurrentMovement();
-            ApplyGravity();
-            ApplyInput();
+            UpdateCurrentMovement(Time.fixedDeltaTime);
+            ApplyGravity(Time.fixedDeltaTime);
+            ApplyMovement(Time.fixedDeltaTime);
 
         }
         #endregion

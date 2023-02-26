@@ -1392,7 +1392,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveInputUpdatingSpeed: 5
-  animationSpeedUpdatingSpeed: 5
+  animationSpeedUpdatingSpeed: 8
   maxAnimatorSpeed: 1.5
   groundHeightUpdatingSpeed: 8
   groundHeightOfHighestFalling: 2

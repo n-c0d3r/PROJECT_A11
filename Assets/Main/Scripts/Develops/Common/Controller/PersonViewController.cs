@@ -67,7 +67,7 @@ namespace PROJECT_A11.Develops.Common
 
 
 
-        private void UpdateRenderersVisibility()
+        private void UpdateCamera()
         {
 
             if (camera == null) return;
@@ -104,7 +104,7 @@ namespace PROJECT_A11.Develops.Common
         protected virtual void Update()
         {
 
-            UpdateRenderersVisibility();
+            UpdateCamera();
 
         }
         #endregion

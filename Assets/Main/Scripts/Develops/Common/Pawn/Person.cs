@@ -65,13 +65,13 @@ namespace PROJECT_A11.Develops.Common
         public ShapeSettings shapeSettings = new ShapeSettings
         {
 
-            radius = 0.5f
+            radius = 0.35f
 
         };
         public HeadSettings headSettings = new HeadSettings
         {
 
-            headOffset = new Vector3(0.0f, 1.5f, 0.0f)
+            headOffset = new Vector3(0.0f, 1.68f, 0.0f)
 
         };
         public AimSettings aimSettings = new AimSettings

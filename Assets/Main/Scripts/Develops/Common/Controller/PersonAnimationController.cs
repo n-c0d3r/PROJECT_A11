@@ -18,10 +18,10 @@ namespace PROJECT_A11.Develops.Common
 
         #region Fields and Private Properties
         public float moveInputUpdatingSpeed = 5.0f;
-        public float animationSpeedUpdatingSpeed = 5.0f;
-        public float maxAnimatorSpeed = 3.0f;
-        public float groundHeightUpdatingSpeed = 3.0f;
-        public float groundHeightOfHighestFalling = 4.0f;
+        public float animationSpeedUpdatingSpeed = 8.0f;
+        public float maxAnimatorSpeed = 1.5f;
+        public float groundHeightUpdatingSpeed = 8.0f;
+        public float groundHeightOfHighestFalling = 2.0f;
 
 
         [Space(10)]
@@ -65,12 +65,12 @@ namespace PROJECT_A11.Develops.Common
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         #region Methods
-        private void UpdateGroundedMovement()
+        private void UpdateGroundedMovement(float deltaTime)
         {
 
             Vector3 moveInput = controller.input.targetMoveInput;
 
-            m_MoveInput = Vector3.Lerp(m_MoveInput, moveInput, Mathf.Clamp01(Time.deltaTime * moveInputUpdatingSpeed));
+            m_MoveInput = Vector3.Lerp(m_MoveInput, moveInput, Mathf.Clamp01(deltaTime * moveInputUpdatingSpeed));
 
 
 
@@ -112,21 +112,21 @@ namespace PROJECT_A11.Develops.Common
 
             }
 
-            m_AnimationSpeed = Mathf.Clamp(Mathf.Lerp(m_AnimationSpeed, targetSpeed, Mathf.Clamp01(Time.deltaTime * animationSpeedUpdatingSpeed)), 0.0f, maxAnimatorSpeed);
+            m_AnimationSpeed = Mathf.Clamp(Mathf.Lerp(m_AnimationSpeed, targetSpeed, Mathf.Clamp01(deltaTime * animationSpeedUpdatingSpeed)), 0.0f, maxAnimatorSpeed);
 
             animator.speed = m_AnimationSpeed;
 
         }
 
-        private void UpdateInAirMovement()
+        private void UpdateInAirMovement(float deltaTime)
         {
 
-            m_AnimationSpeed = Mathf.Clamp(Mathf.Lerp(m_AnimationSpeed, 1.0f, Mathf.Clamp01(Time.deltaTime * animationSpeedUpdatingSpeed)), 0.0f, maxAnimatorSpeed);
+            m_AnimationSpeed = Mathf.Clamp(Mathf.Lerp(m_AnimationSpeed, 1.0f, Mathf.Clamp01(deltaTime * animationSpeedUpdatingSpeed)), 0.0f, maxAnimatorSpeed);
 
             animator.speed = m_AnimationSpeed;
         }
 
-        private void UpdateBodyState()
+        private void UpdateBodyState(float deltaTime)
         {
 
             animator.SetBool(
@@ -144,7 +144,7 @@ namespace PROJECT_A11.Develops.Common
 
         }
 
-        private void UpdateEnvironment()
+        private void UpdateEnvironment(float deltaTime)
         {
 
             animator.SetBool(
@@ -156,6 +156,15 @@ namespace PROJECT_A11.Develops.Common
                 "IsInAir",
                 controller.currentMovement.environment == PersonController.Environment.InAir
             );
+
+        }
+
+        private void UpdateGroundHeight(float deltaTime)
+        {
+
+            m_GroundHeight = Mathf.Lerp(m_GroundHeight, controller.currentMovement.groundHeight, Mathf.Clamp01(deltaTime * groundHeightUpdatingSpeed));
+            animator.SetFloat("GroundHeight", m_GroundHeight);
+            animator.SetFloat("FallingStrength", m_GroundHeight / groundHeightOfHighestFalling);
 
         }
         #endregion
@@ -179,7 +188,7 @@ namespace PROJECT_A11.Develops.Common
 
             base.Update();
 
-            UpdateEnvironment();
+            UpdateEnvironment(Time.deltaTime);
 
 
             
@@ -187,24 +196,22 @@ namespace PROJECT_A11.Develops.Common
             {
 
                 case PersonController.Environment.Grounded:
-                    UpdateGroundedMovement();
+                    UpdateGroundedMovement(Time.deltaTime);
                     break;
 
                 case PersonController.Environment.InAir:
-                    UpdateInAirMovement();
+                    UpdateInAirMovement(Time.deltaTime);
                     break;
 
             }
 
 
 
-            m_GroundHeight = Mathf.Lerp(m_GroundHeight, controller.currentMovement.groundHeight, Mathf.Clamp01(Time.deltaTime * groundHeightUpdatingSpeed));
-            animator.SetFloat("GroundHeight", m_GroundHeight);
-            animator.SetFloat("FallingStrength", m_GroundHeight / groundHeightOfHighestFalling);
+            UpdateGroundHeight(Time.deltaTime);
 
 
 
-            UpdateBodyState();
+            UpdateBodyState(Time.deltaTime);
 
         }
 
