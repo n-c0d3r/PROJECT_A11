@@ -917,67 +917,67 @@ AnimatorController:
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: MoveInputY
     m_Type: 1
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: GroundedSpeed
     m_Type: 1
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: IsMoving
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: IsSprintingBody
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 1
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: IsCrouchingBody
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: IsOrdinaryBody
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: IsGrounded
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 1
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: IsInAir
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: GroundHeight
     m_Type: 1
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: FallingStrength
     m_Type: 1
     m_DefaultFloat: 1
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   m_AnimatorLayers:
   - serializedVersion: 5
     m_Name: Base
@@ -1670,7 +1670,7 @@ BlendTree:
     m_Mirror: 0
   - serializedVersion: 2
     m_Motion: {fileID: 7400000, guid: 3b360ff4aa65daf40b1c0557e1d280a4, type: 2}
-    m_Threshold: 0.25
+    m_Threshold: 0.21666667
     m_Position: {x: 0, y: -1}
     m_TimeScale: 1
     m_CycleOffset: 0
@@ -1678,7 +1678,7 @@ BlendTree:
     m_Mirror: 0
   - serializedVersion: 2
     m_Motion: {fileID: 7400000, guid: ae127a235f9f2ed4b8fb991bc8832f85, type: 2}
-    m_Threshold: 0.3333333
+    m_Threshold: 0.26666665
     m_Position: {x: 1, y: 0}
     m_TimeScale: 1
     m_CycleOffset: 0
@@ -1686,32 +1686,32 @@ BlendTree:
     m_Mirror: 0
   - serializedVersion: 2
     m_Motion: {fileID: 7400000, guid: c9beaa28572bfe54d96ba1fbf86183cc, type: 2}
-    m_Threshold: 0.41666666
+    m_Threshold: 0.31666666
     m_Position: {x: -1, y: 0}
     m_TimeScale: 1
     m_CycleOffset: 0
     m_DirectBlendParameter: GroundedMoveDirectionX
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: 7400000, guid: ae127a235f9f2ed4b8fb991bc8832f85, type: 2}
-    m_Threshold: 0.5
-    m_Position: {x: -1, y: -1}
-    m_TimeScale: -1
+    m_Motion: {fileID: 7400000, guid: ff6b11ec67059de41a54379e5f316613, type: 2}
+    m_Threshold: 0.36666667
+    m_Position: {x: 1, y: -1}
+    m_TimeScale: 1
     m_CycleOffset: 0
-    m_DirectBlendParameter: GroundedMoveDirectionX
+    m_DirectBlendParameter: MoveInputX
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: 7400000, guid: c9beaa28572bfe54d96ba1fbf86183cc, type: 2}
-    m_Threshold: 0.5833333
-    m_Position: {x: 1, y: -1}
-    m_TimeScale: -1
+    m_Motion: {fileID: 7400000, guid: 860b156b20368da49bed39f86df0f7c8, type: 2}
+    m_Threshold: 0.41666666
+    m_Position: {x: -1, y: -1}
+    m_TimeScale: 1
     m_CycleOffset: 0
-    m_DirectBlendParameter: GroundedMoveDirectionX
+    m_DirectBlendParameter: MoveInputX
     m_Mirror: 0
   m_BlendParameter: MoveInputX
   m_BlendParameterY: MoveInputY
   m_MinThreshold: 0.16666667
-  m_MaxThreshold: 0.5833333
+  m_MaxThreshold: 0.41666666
   m_UseAutomaticThresholds: 1
   m_NormalizedBlendValues: 0
   m_BlendType: 1

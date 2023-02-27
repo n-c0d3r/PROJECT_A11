@@ -15229,17 +15229,17 @@ PrefabInstance:
     - target: {fileID: 7569016800543778863, guid: 9e92eb27e19760041b9c939ff8fda147,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 7.69
+      value: 7.84
       objectReference: {fileID: 0}
     - target: {fileID: 7569016800543778863, guid: 9e92eb27e19760041b9c939ff8fda147,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.033
       objectReference: {fileID: 0}
     - target: {fileID: 7569016800543778863, guid: 9e92eb27e19760041b9c939ff8fda147,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 12.23
+      value: 12.38
       objectReference: {fileID: 0}
     - target: {fileID: 7569016800543778863, guid: 9e92eb27e19760041b9c939ff8fda147,
         type: 3}
@@ -15290,12 +15290,11 @@ PrefabInstance:
         'mixamorig:LeftHand'\n\tTransform 'mixamorig:LeftToeBase'\n\tTransform 'mixamorig:Spine1'\n\tTransform
         'mixamorig:Spine2'\n\tTransform 'mixamorig:LeftHandPinky3'\n\tTransform 'mixamorig:LeftHandThumb1'\n\tTransform
         'mixamorig:RightHandPinky3'\n\tTransform 'mixamorig:LeftHandRing2'\n\tand
-        more ...\n\tFrom animation clip 'Sprint'\n\tFrom animation clip 'Running
-        Backward'\n\tFrom animation clip 'Right Strafe'\n\tFrom animation clip 'Left
-        Strafe'\n\tFrom animation clip 'Right Strafe'\n\tFrom animation clip 'Left
-        Strafe'\n\tFrom animation clip 'Sprint'\n\tFrom animation clip 'Running Backward'\n\tFrom
-        animation clip 'Right Strafe'\n\tFrom animation clip 'Left Strafe'\n\tand
-        more ..."
+        more ...\n\tFrom animation clip 'Sprint'\n\tFrom animation clip 'Sprint_B'\n\tFrom
+        animation clip 'Sprint_R'\n\tFrom animation clip 'Sprint_L'\n\tFrom animation
+        clip 'Sprint_RB'\n\tFrom animation clip 'Sprint_LB'\n\tFrom animation clip
+        'Sprint'\n\tFrom animation clip 'Sprint_B'\n\tFrom animation clip 'Sprint_R'\n\tFrom
+        animation clip 'Sprint_L'\n\tand more ..."
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9e92eb27e19760041b9c939ff8fda147, type: 3}

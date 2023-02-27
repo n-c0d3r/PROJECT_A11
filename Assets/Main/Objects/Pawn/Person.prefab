@@ -1288,8 +1288,8 @@ MonoBehaviour:
   checkedSphereColor: {r: 1, g: 0, b: 1, a: 1}
   checkedSphereRadius: 0.08
   checkedSphereThickness: 2
-  m_CheckedPosition: {x: 7.6900005, y: 0.0001, z: 12.229999}
-  m_CheckedNormal: {x: -0.0000011920929, y: 1, z: 0.0000023841858}
+  m_CheckedPosition: {x: -3.223999, y: 0.0001, z: 13.060999}
+  m_CheckedNormal: {x: -0.0000023841858, y: 1, z: 0.0000023841858}
   m_IsGrounded: 1
 --- !u!114 &7569016800543778859
 MonoBehaviour:
@@ -1392,7 +1392,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveInputUpdatingSpeed: 5
-  animationSpeedUpdatingSpeed: 8
+  animationSpeedUpdatingSpeed: 9
   maxAnimatorSpeed: 1.5
   groundHeightUpdatingSpeed: 8
   groundHeightOfHighestFalling: 2
