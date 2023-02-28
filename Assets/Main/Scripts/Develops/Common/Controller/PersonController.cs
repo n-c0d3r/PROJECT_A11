@@ -172,9 +172,9 @@ namespace PROJECT_A11.Develops.Common
 #if UNITY_EDITOR
         [Space(10)]
         [Header("Debug Settings")]
-        public Color bottomCircleColor = Color.gray;
-        public float bottomCircleRadius = 0.55f;
-        public float bottomCircleThickness = 2.0f;
+        public Color groundBottomCircleColor = Color.gray;
+        public float groundBottomCircleRadius = 0.55f;
+        public float groundBottomCircleThickness = 2.0f;
 #endif
 
 
@@ -230,7 +230,7 @@ namespace PROJECT_A11.Develops.Common
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         #region Utility Getters
-        public Vector3 up
+        public Vector3 groundUp
         {
 
             get
@@ -240,7 +240,7 @@ namespace PROJECT_A11.Develops.Common
             }
 
         }
-        public Vector3 bottom
+        public Vector3 groundBottom
         {
 
             get
@@ -251,44 +251,44 @@ namespace PROJECT_A11.Develops.Common
 
         }
 
-        public Vector3 forward
+        public Vector3 groundForward
         {
 
             get
             {
 
-                return Vector3.Cross(transform.right, up);
+                return Vector3.Cross(transform.right, groundUp);
             }
 
         }
-        public Vector3 back
+        public Vector3 groundBack
         {
 
             get
             {
 
-                return -Vector3.Cross(transform.right, up);
+                return -Vector3.Cross(transform.right, groundUp);
             }
 
         }
 
-        public Vector3 right
+        public Vector3 groundRight
         {
 
             get
             {
 
-                return -Vector3.Cross(transform.forward, up);
+                return -Vector3.Cross(transform.forward, groundUp);
             }
 
         }
-        public Vector3 left
+        public Vector3 groundLeft
         {
 
             get
             {
 
-                return Vector3.Cross(transform.forward, up);
+                return Vector3.Cross(transform.forward, groundUp);
             }
 
         }
@@ -301,9 +301,9 @@ namespace PROJECT_A11.Develops.Common
             get
             {
 
-                Vector3 u = up;
-                Vector3 f = forward;
-                Vector3 r = right;
+                Vector3 u = groundUp;
+                Vector3 f = groundForward;
+                Vector3 r = groundRight;
 
                 return new Matrix4x4(
                     new Vector4(r.x, r.y, r.z, 0.0f),
@@ -438,7 +438,7 @@ namespace PROJECT_A11.Develops.Common
         private void UpdateInput(float deltaTime)
         {
 
-            m_Input.targetMoveDirection = forward * m_Input.targetMoveInput.y + right * m_Input.targetMoveInput.x;
+            m_Input.targetMoveDirection = groundForward * m_Input.targetMoveInput.y + groundRight * m_Input.targetMoveInput.x;
 
         }
 
@@ -656,7 +656,7 @@ namespace PROJECT_A11.Develops.Common
 
             Vector3 movementSpaceCurrVel = worldSpaceToMovementSpaceMatrix * currVelocity;
             movementSpaceCurrVel.y = 0.0f;
-            Vector3 movementSpaceMoveVel = worldSpaceToMovementSpaceMatrix * (input.targetMoveInput.x * right + input.targetMoveInput.y * forward) * jumpStartPlanarVelocity;
+            Vector3 movementSpaceMoveVel = worldSpaceToMovementSpaceMatrix * (input.targetMoveInput.x * groundRight + input.targetMoveInput.y * groundForward) * jumpStartPlanarVelocity;
             movementSpaceMoveVel.y = 0.0f;
             movementSpaceMoveVel *= m_CurrentMovement.bhopPlanarPower;
 
@@ -903,8 +903,8 @@ namespace PROJECT_A11.Develops.Common
             if(groundChecker.isGrounded)
             {
 
-                Handles.color = bottomCircleColor;
-                Handles.DrawWireDisc(transform.position, groundChecker.checkedNormal, bottomCircleRadius, bottomCircleThickness);
+                Handles.color = groundBottomCircleColor;
+                Handles.DrawWireDisc(transform.position, groundChecker.checkedNormal, groundBottomCircleRadius, groundBottomCircleThickness);
 
             }
 

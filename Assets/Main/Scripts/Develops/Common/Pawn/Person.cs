@@ -136,7 +136,7 @@ namespace PROJECT_A11.Develops.Common
                 foreach (Transform bottomTransform in shapeSettings.bottomTransforms)
                 {
 
-                    bottom = Mathf.Max(bottom, Vector3.Dot((bottomTransform.position - shapeSettings.centerTransform.position), -controller.up));
+                    bottom = Mathf.Max(bottom, Vector3.Dot((bottomTransform.position - shapeSettings.centerTransform.position), -controller.groundUp));
 
                 }
 
@@ -162,7 +162,7 @@ namespace PROJECT_A11.Develops.Common
                 foreach (Transform topTransform in shapeSettings.topTransforms)
                 {
 
-                    top = Mathf.Max(top, Vector3.Dot((topTransform.position - shapeSettings.centerTransform.position), controller.up));
+                    top = Mathf.Max(top, Vector3.Dot((topTransform.position - shapeSettings.centerTransform.position), controller.groundUp));
 
                 }
 
@@ -182,7 +182,7 @@ namespace PROJECT_A11.Develops.Common
                 if (shapeSettings.centerTransform == null) return transform.position;
 #endif
 
-                return shapeSettings.centerTransform.position - controller.up * bottomDistance;
+                return shapeSettings.centerTransform.position - controller.groundUp * bottomDistance;
             }
 
         }
@@ -196,7 +196,7 @@ namespace PROJECT_A11.Develops.Common
                 if (shapeSettings.centerTransform == null) return transform.position;
 #endif
 
-                return shapeSettings.centerTransform.position + controller.up * topDistance;
+                return shapeSettings.centerTransform.position + controller.groundUp * topDistance;
             }
 
         }
@@ -221,7 +221,7 @@ namespace PROJECT_A11.Develops.Common
             foreach (Transform bottomTransform in bottomTransforms)
             {
 
-                bottom = Mathf.Max(bottom, Vector3.Dot((bottomTransform.position - shapeSettings.centerTransform.position), -controller.up));
+                bottom = Mathf.Max(bottom, Vector3.Dot((bottomTransform.position - shapeSettings.centerTransform.position), -controller.groundUp));
 
             }
 
@@ -241,7 +241,7 @@ namespace PROJECT_A11.Develops.Common
             foreach (Transform topTransform in topTransforms)
             {
 
-                top = Mathf.Max(top, Vector3.Dot((topTransform.position - shapeSettings.centerTransform.position), controller.up));
+                top = Mathf.Max(top, Vector3.Dot((topTransform.position - shapeSettings.centerTransform.position), controller.groundUp));
 
             }
 
@@ -255,7 +255,7 @@ namespace PROJECT_A11.Develops.Common
             if (shapeSettings.centerTransform == null) return transform.position;
 #endif
 
-            return shapeSettings.centerTransform.position - controller.up * BottomDistance(bottomTransforms);
+            return shapeSettings.centerTransform.position - controller.groundUp * BottomDistance(bottomTransforms);
 
         }
         public Vector3 TopPoint(Transform[] topTransforms)
@@ -265,7 +265,7 @@ namespace PROJECT_A11.Develops.Common
             if (shapeSettings.centerTransform == null) return transform.position;
 #endif
 
-            return shapeSettings.centerTransform.position + controller.up * TopDistance(topTransforms);
+            return shapeSettings.centerTransform.position + controller.groundUp * TopDistance(topTransforms);
         }
         #endregion
 
@@ -283,7 +283,7 @@ namespace PROJECT_A11.Develops.Common
 
             float top = topDistance;
             float bottom = bottomDistance;
-            float center = Vector3.Dot((shapeSettings.centerTransform.position - transform.position), controller.up);
+            float center = Vector3.Dot((shapeSettings.centerTransform.position - transform.position), controller.groundUp);
 
             float height = top + bottom;
 
