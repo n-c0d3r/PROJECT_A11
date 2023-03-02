@@ -2,12 +2,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Animations;
+using UnityEngine.Animations.Rigging;
 using UnityEngine.Assertions;
-
-
+using UnityEngine.Playables;
+using UnityEngine.UIElements;
 
 namespace PROJECT_A11.Develops.Common
 {
+
     public class PersonAnimationController :
         PawnAnimationController<Person, PersonController>
     {
@@ -23,18 +26,21 @@ namespace PROJECT_A11.Develops.Common
         public float groundHeightUpdatingSpeed = 8.0f;
         public float groundHeightOfHighestFalling = 2.0f;
 
-
         [Space(10)]
         [Header("Bone Settings")]
         public Transform boneHip;
         public Transform boneFootL;
         public Transform boneFootR;
 
-
         [Space(10)]
         [Header("IK Settings")]
         public Transform ikFootL;
         public Transform ikFootR;
+
+        [Space(10)]
+        [Header("Rig Settings")]
+        public Transform handRRig;
+        public Transform handLRig;
 
 
 
@@ -49,6 +55,11 @@ namespace PROJECT_A11.Develops.Common
         [ReadOnly]
         [SerializeField]
         private float m_GroundHeight = 0.0f;
+
+        private TwoBoneIKConstraint handRRig2BoneIKConstraint;
+        private MultiRotationConstraint handRRigRotationConstraint;
+        private TwoBoneIKConstraint handLRig2BoneIKConstraint;
+        private MultiRotationConstraint handLRigRotationConstraint;
         #endregion
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -167,6 +178,29 @@ namespace PROJECT_A11.Develops.Common
             animator.SetFloat("FallingStrength", m_GroundHeight / groundHeightOfHighestFalling);
 
         }
+
+        private void UpdateHandRigs()
+        {
+
+            float lockIKHandR = animator.GetFloat("LockIKHandR");
+            float lockIKHandL = animator.GetFloat("LockIKHandL");
+
+            if (handRRig != null)
+            {
+
+                handRRig2BoneIKConstraint.weight = lockIKHandR;
+                handRRigRotationConstraint.weight = lockIKHandR;
+
+            }
+            if (handLRig != null)
+            {
+
+                handLRig2BoneIKConstraint.weight = lockIKHandL;
+                handLRigRotationConstraint.weight = lockIKHandL;
+
+            }
+
+        }
         #endregion
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -180,6 +214,25 @@ namespace PROJECT_A11.Develops.Common
             base.Awake();
 
             m_Animator = GetComponent<Animator>();
+
+
+
+            if (handRRig != null)
+            {
+
+                handRRig2BoneIKConstraint = handRRig.GetComponent<TwoBoneIKConstraint>();
+
+                handRRigRotationConstraint = handRRig.GetComponent<MultiRotationConstraint>();
+
+            }
+            if (handLRig != null)
+            {
+
+                handLRig2BoneIKConstraint = handLRig.GetComponent<TwoBoneIKConstraint>();
+
+                handLRigRotationConstraint = handLRig.GetComponent<MultiRotationConstraint>();
+
+            }
 
         }
 
@@ -211,10 +264,13 @@ namespace PROJECT_A11.Develops.Common
 
 
 
+            UpdateHandRigs();
+
+
+
             UpdateBodyState(Time.deltaTime);
 
         }
-
         #endregion
 
     }

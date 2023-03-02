@@ -104,62 +104,62 @@ namespace PROJECT_A11.Develops.Common
 
             m_PlayerInput.actions["GroundedOrdinaryMove"].performed += ctx => {
 
-                controller.OnGroundedMoving(ctx.ReadValue<Vector2>());
+                controller.GroundedMove(ctx.ReadValue<Vector2>());
 
             };
             m_PlayerInput.actions["GroundedOrdinaryMove"].canceled += ctx => {
 
-                controller.OnStopGroundedMoving();
+                controller.StopGroundedMoving();
 
             };
 
             m_PlayerInput.actions["Strafe"].performed += ctx => {
 
-                controller.OnStrafing(ctx.ReadValue<Vector2>());
+                controller.Strafe(ctx.ReadValue<Vector2>());
 
             };
             m_PlayerInput.actions["Strafe"].canceled += ctx => {
 
-                controller.OnStopStrafing();
+                controller.StopStrafing();
 
             };
 
             m_PlayerInput.actions["OrdinaryBody"].performed += ctx => {
 
-                controller.OnStartOrdinaryBody();
+                controller.StartOrdinaryBody();
 
             };
             m_PlayerInput.actions["OrdinaryBody"].canceled += ctx => {
 
-                controller.OnStopOrdinaryBody();
+                controller.StopOrdinaryBody();
 
             };
 
             m_PlayerInput.actions["Crouch"].performed += ctx => {
 
-                controller.OnStartCrouching();
+                controller.StartCrouching();
 
             };
             m_PlayerInput.actions["Crouch"].canceled += ctx => {
 
-                controller.OnStopCrouching();
+                controller.StopCrouching();
 
             };
 
             m_PlayerInput.actions["Look"].performed += ctx => {
 
-                controller.OnLooking(ProcessLookInput(ctx.ReadValue<Vector2>()));
+                controller.Look(ProcessLookInput(ctx.ReadValue<Vector2>()));
 
             };
             m_PlayerInput.actions["Look"].canceled += ctx => {
 
-                controller.OnLooking(ProcessLookInput(ctx.ReadValue<Vector2>()));
+                controller.Look(ProcessLookInput(ctx.ReadValue<Vector2>()));
 
             };
 
             m_PlayerInput.actions["Jump"].performed += ctx => {
 
-                controller.OnStartJumping();
+                controller.Jump();
 
             };
 

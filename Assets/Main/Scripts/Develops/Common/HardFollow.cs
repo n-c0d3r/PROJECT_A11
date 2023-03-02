@@ -20,9 +20,13 @@ namespace PROJECT_A11.Develops.Common
 
         #region Fields
         public Transform targetTransform;
-        public Vector3 offset;
+        public Vector3 localPositionOffset;
+        public Vector3 worldPositionOffset;
 
         public Vector3 followMask = new Vector3(1.0f, 1.0f, 1.0f);
+
+        public bool followRotation = false;
+        public Quaternion rotationOffset;
         #endregion
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -57,9 +61,18 @@ namespace PROJECT_A11.Develops.Common
             Matrix4x4 w2lMatrix = transform.parent.worldToLocalMatrix;
             Matrix4x4 l2wMatrix = transform.localToWorldMatrix;
 
-            Vector3 lTPos = w2lMatrix * (new Vector4(targetTransform.position.x, targetTransform.position.y, targetTransform.position.z, 1.0f) + l2wMatrix * offset);
+            Vector3 lTPos = w2lMatrix * (new Vector4(targetTransform.position.x, targetTransform.position.y, targetTransform.position.z, 1.0f) + l2wMatrix * localPositionOffset + new Vector4(worldPositionOffset.x, worldPositionOffset.y, worldPositionOffset.z, 0.0f));
 
             transform.localPosition = V3Mask(transform.localPosition, lTPos, followMask);
+
+
+
+            if (followRotation)
+            {
+
+                transform.rotation = targetTransform.rotation * rotationOffset;
+
+            }
 
         }
         #endregion

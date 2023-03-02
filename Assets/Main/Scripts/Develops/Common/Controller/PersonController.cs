@@ -169,6 +169,12 @@ namespace PROJECT_A11.Develops.Common
 
 
 
+        [Space(10)]
+        [Header("Bag Settings")]
+        public Item defaultItem;
+
+
+
 #if UNITY_EDITOR
         [Space(10)]
         [Header("Debug Settings")]
@@ -223,6 +229,11 @@ namespace PROJECT_A11.Develops.Common
         [SerializeField]
         private Quaternion m_DefaultSelfRotation;
         public Quaternion defaultSelfRotation { get { return m_DefaultSelfRotation; } }
+
+        [ReadOnly]
+        [SerializeField]
+        private Item m_CurrentItem;
+        public Item currentItem { get { return m_CurrentItem; } }
         #endregion
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -676,7 +687,7 @@ namespace PROJECT_A11.Develops.Common
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         #region Controller Events
-        public virtual void OnStartGrounded()
+        protected virtual void OnStartGrounded()
         {
 
             m_CurrentMovement.environment = Environment.Grounded;
@@ -695,7 +706,7 @@ namespace PROJECT_A11.Develops.Common
             brain.OnStartGrounded();
 
         }
-        public virtual void OnEndGrounded()
+        protected virtual void OnEndGrounded()
         {
 
             m_CurrentMovement.environment = Environment.InAir;
@@ -726,7 +737,7 @@ namespace PROJECT_A11.Develops.Common
             brain.OnStartGroundedMoving(input);
 
         }
-        public virtual void OnGroundedMoving(Vector2 input)
+        protected virtual void OnGroundedMoving(Vector2 input)
         {
 
             m_Input.targetMoveInput = input;
@@ -747,7 +758,7 @@ namespace PROJECT_A11.Develops.Common
 
         }
 
-        public virtual void OnStopGroundedMoving()
+        protected virtual void OnStopGroundedMoving()
         {
 
             if (m_Input.targetGroundedMovementMode != GroundedMovementMode.Ordinary) return;
@@ -759,7 +770,7 @@ namespace PROJECT_A11.Develops.Common
             brain.OnStopGroundedMoving();
 
         }
-        public virtual void OnStartOrdinaryBody()
+        protected virtual void OnStartOrdinaryBody()
         {
 
             m_Input.targetBodyState = BodyState.Ordinary;
@@ -767,7 +778,7 @@ namespace PROJECT_A11.Develops.Common
             brain.OnStartOrdinaryBody();
 
         }
-        public virtual void OnStopOrdinaryBody()
+        protected virtual void OnStopOrdinaryBody()
         {
 
             m_Input.targetBodyState = BodyState.Sprinting;
@@ -775,7 +786,7 @@ namespace PROJECT_A11.Develops.Common
             brain.OnStopOrdinaryBody();
 
         }
-        public virtual void OnStartCrouching()
+        protected virtual void OnStartCrouching()
         {
 
             m_Input.targetBodyState = BodyState.Crouching;
@@ -783,7 +794,7 @@ namespace PROJECT_A11.Develops.Common
             brain.OnStartCrouching();
 
         }
-        public virtual void OnStopCrouching()
+        protected virtual void OnStopCrouching()
         {
 
             m_Input.targetBodyState = BodyState.Sprinting;
@@ -804,7 +815,7 @@ namespace PROJECT_A11.Develops.Common
             brain.OnStartStrafing(input);
 
         }
-        public virtual void OnStrafing(Vector2 input)
+        protected virtual void OnStrafing(Vector2 input)
         {
 
             if (currentMovement.environment != PersonController.Environment.InAir)
@@ -823,7 +834,7 @@ namespace PROJECT_A11.Develops.Common
             brain.OnStrafing(input);
 
         }
-        public virtual void OnStopStrafing()
+        protected virtual void OnStopStrafing()
         {
 
             if (m_Input.targetInAirMovementMode != InAirMovementMode.Strafing) return;
@@ -834,7 +845,7 @@ namespace PROJECT_A11.Develops.Common
             brain.OnStopStrafing();
 
         }
-        public virtual void OnStartJumping()
+        protected virtual void OnStartJumping()
         {
 
             m_CurrentMovement.jumpTime = 0.0f;
@@ -844,13 +855,102 @@ namespace PROJECT_A11.Develops.Common
 
         }
 
-        public virtual void OnLooking(Vector2 input)
+        protected virtual void OnLooking(Vector2 input)
         {
 
             m_Input.targetDeltaLook += input;
             m_Input.targetDeltaLook_forFixedUpdate += input;
 
             brain.OnLooking(input);
+
+        }
+
+        protected virtual void OnChangingItem(Item newItem)
+        {
+
+            if (newItem == null) return;
+
+
+
+            if(m_CurrentItem != null)
+            {
+
+                m_CurrentItem.StopUsing();
+
+            }
+
+            newItem.Use();
+
+            m_CurrentItem = newItem;
+
+        }
+        #endregion
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        #region Input Methods
+        public void GroundedMove(Vector2 input)
+        {
+
+            OnGroundedMoving(input);
+        }
+        public void StopGroundedMoving()
+        {
+
+            OnStopGroundedMoving();
+        }
+
+        public void Strafe(Vector2 input)
+        {
+
+            OnStrafing(input);
+        }
+        public void StopStrafing()
+        {
+
+            OnStopStrafing();
+        }
+
+        public void StartOrdinaryBody()
+        {
+
+            OnStartOrdinaryBody();
+        }
+        public void StopOrdinaryBody()
+        {
+
+            OnStopOrdinaryBody();
+        }
+
+        public void StartCrouching()
+        {
+
+            OnStartCrouching();
+        }
+        public void StopCrouching()
+        {
+
+            OnStopCrouching();
+        }
+
+        public void Look(Vector2 input)
+        {
+
+            OnLooking(input);
+        }
+
+        public void Jump()
+        {
+
+            OnStartJumping();
+        }
+
+        public void UseItem(Item newItem)
+        {
+
+            Item previousItem = m_CurrentItem;
 
         }
         #endregion
@@ -875,6 +975,14 @@ namespace PROJECT_A11.Develops.Common
             m_DefaultSelfRotation = transform.rotation;
 
         }
+
+        protected virtual void Start()
+        {
+
+            UseItem(defaultItem);
+
+        }
+
         protected virtual void Update()
         {
 
