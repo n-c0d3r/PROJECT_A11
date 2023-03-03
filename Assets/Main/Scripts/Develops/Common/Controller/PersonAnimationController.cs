@@ -182,21 +182,21 @@ namespace PROJECT_A11.Develops.Common
         private void UpdateHandRigs()
         {
 
-            float lockIKHandR = animator.GetFloat("LockIKHandR");
-            float lockIKHandL = animator.GetFloat("LockIKHandL");
+            float handR_LockToItemView = animator.GetFloat("HandR_LockToItemView");
+            float handL_LockToItemView = animator.GetFloat("HandL_LockToItemView");
 
             if (handRRig != null)
             {
 
-                handRRig2BoneIKConstraint.weight = lockIKHandR;
-                handRRigRotationConstraint.weight = lockIKHandR;
+                handRRig2BoneIKConstraint.weight = handR_LockToItemView;
+                handRRigRotationConstraint.weight = handR_LockToItemView;
 
             }
             if (handLRig != null)
             {
 
-                handLRig2BoneIKConstraint.weight = lockIKHandL;
-                handLRigRotationConstraint.weight = lockIKHandL;
+                handLRig2BoneIKConstraint.weight = handL_LockToItemView;
+                handLRigRotationConstraint.weight = handL_LockToItemView;
 
             }
 
