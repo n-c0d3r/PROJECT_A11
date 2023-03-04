@@ -4175,7 +4175,7 @@ MonoBehaviour:
   moveInputUpdatingSpeed: 5
   animationSpeedUpdatingSpeed: 9
   maxAnimatorSpeed: 1.5
-  groundHeightUpdatingSpeed: 12
+  groundHeightUpdatingSpeed: 8
   groundHeightOfHighestFalling: 2
   boneHip: {fileID: 6360172330601233070}
   boneFootL: {fileID: 1175309761787816801}
