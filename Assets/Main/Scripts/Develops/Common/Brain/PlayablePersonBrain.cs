@@ -13,6 +13,7 @@ namespace PROJECT_A11.Develops.Common
     /// <summary>
     /// PlayablePersonBrain means that this pawn brain is controllable by player.
     /// </summary>
+    [AddComponentMenu("PROJECT_A11/Common/Brain/PlayablePersonBrain")]
     [RequireComponent(typeof(PlayerInput))]
     [RequireComponent(typeof(PersonViewController))]
     public class PlayablePersonBrain:

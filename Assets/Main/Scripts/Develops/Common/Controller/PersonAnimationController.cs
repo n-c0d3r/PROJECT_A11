@@ -11,6 +11,7 @@ using UnityEngine.UIElements;
 namespace PROJECT_A11.Develops.Common
 {
 
+    [AddComponentMenu("PROJECT_A11/Common/Controller/PersonAnimationController")]
     public class PersonAnimationController :
         PawnAnimationController<Person, PersonController>
     {
@@ -33,14 +34,17 @@ namespace PROJECT_A11.Develops.Common
         public Transform boneFootR;
 
         [Space(10)]
-        [Header("IK Settings")]
-        public Transform ikFootL;
-        public Transform ikFootR;
+        [Header("Physical IK Settings")]
+        public Transform physicalIKRoot;
+        public Transform physicalIKFootL;
+        public Transform physicalIKFootR;
 
         [Space(10)]
         [Header("Rig Settings")]
         public Transform handRRig;
         public Transform handLRig;
+        public Transform footRRig;
+        public Transform footLRig;
 
 
 
@@ -56,10 +60,15 @@ namespace PROJECT_A11.Develops.Common
         [SerializeField]
         private float m_GroundHeight = 0.0f;
 
-        private TwoBoneIKConstraint handRRig2BoneIKConstraint;
-        private MultiRotationConstraint handRRigRotationConstraint;
-        private TwoBoneIKConstraint handLRig2BoneIKConstraint;
-        private MultiRotationConstraint handLRigRotationConstraint;
+        private TwoBoneIKConstraint m_HandRRig2BoneIKConstraint;
+        private MultiRotationConstraint m_HandRRigRotationConstraint;
+        private TwoBoneIKConstraint m_HandLRig2BoneIKConstraint;
+        private MultiRotationConstraint m_HandLRigRotationConstraint;
+
+        private FootPlacement m_FootPlacementL;
+        private FootPlacement m_FootPlacementR;
+        private TwoBoneIKConstraint m_FootLRig2BoneIKConstraint;
+        private TwoBoneIKConstraint m_FootRRig2BoneIKConstraint;
         #endregion
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -188,15 +197,63 @@ namespace PROJECT_A11.Develops.Common
             if (handRRig != null)
             {
 
-                handRRig2BoneIKConstraint.weight = handR_LockToItemView;
-                handRRigRotationConstraint.weight = handR_LockToItemView;
+                m_HandRRig2BoneIKConstraint.weight = handR_LockToItemView;
+                m_HandRRigRotationConstraint.weight = handR_LockToItemView;
 
             }
             if (handLRig != null)
             {
 
-                handLRig2BoneIKConstraint.weight = handL_LockToItemView;
-                handLRigRotationConstraint.weight = handL_LockToItemView;
+                m_HandLRig2BoneIKConstraint.weight = handL_LockToItemView;
+                m_HandLRigRotationConstraint.weight = handL_LockToItemView;
+
+            }
+
+        }
+        private void UpdateFootRigs()
+        {
+
+            if (m_FootPlacementL)
+            {
+
+                float lockWeight = m_Animator.GetFloat("LockFootL");
+
+                m_FootPlacementL.weight = lockWeight;
+                m_FootLRig2BoneIKConstraint.weight = lockWeight;
+
+            }
+            if (m_FootPlacementR)
+            {
+
+                float lockWeight = m_Animator.GetFloat("LockFootR");
+
+                m_FootPlacementR.weight = lockWeight;
+                m_FootRRig2BoneIKConstraint.weight = lockWeight;
+
+            }
+
+        }
+
+        public void EnableRigs()
+        {
+
+            RigBuilder rigBuilder = GetComponent<RigBuilder>();
+            foreach (var layer in rigBuilder.layers)
+            {
+
+                layer.rig.weight = 1.0f;
+
+            }
+
+        }
+        public void DisableRigs()
+        {
+
+            RigBuilder rigBuilder = GetComponent<RigBuilder>();
+            foreach (var layer in rigBuilder.layers)
+            {
+
+                layer.rig.weight = 0.0f;
 
             }
 
@@ -220,17 +277,32 @@ namespace PROJECT_A11.Develops.Common
             if (handRRig != null)
             {
 
-                handRRig2BoneIKConstraint = handRRig.GetComponent<TwoBoneIKConstraint>();
+                m_HandRRig2BoneIKConstraint = handRRig.GetComponent<TwoBoneIKConstraint>();
 
-                handRRigRotationConstraint = handRRig.GetComponent<MultiRotationConstraint>();
+                m_HandRRigRotationConstraint = handRRig.GetComponent<MultiRotationConstraint>();
 
             }
             if (handLRig != null)
             {
 
-                handLRig2BoneIKConstraint = handLRig.GetComponent<TwoBoneIKConstraint>();
+                m_HandLRig2BoneIKConstraint = handLRig.GetComponent<TwoBoneIKConstraint>();
 
-                handLRigRotationConstraint = handLRig.GetComponent<MultiRotationConstraint>();
+                m_HandLRigRotationConstraint = handLRig.GetComponent<MultiRotationConstraint>();
+
+            }
+
+            if (footLRig != null)
+            {
+
+                m_FootPlacementL = footLRig.GetComponent<FootPlacement>();
+                m_FootLRig2BoneIKConstraint = footLRig.GetComponent<TwoBoneIKConstraint>();
+
+            }
+            if (footRRig != null)
+            {
+
+                m_FootPlacementR = footRRig.GetComponent<FootPlacement>();
+                m_FootRRig2BoneIKConstraint = footRRig.GetComponent<TwoBoneIKConstraint>();
 
             }
 
@@ -265,6 +337,7 @@ namespace PROJECT_A11.Develops.Common
 
 
             UpdateHandRigs();
+            UpdateFootRigs();
 
 
 

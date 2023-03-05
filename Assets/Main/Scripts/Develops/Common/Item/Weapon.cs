@@ -9,6 +9,7 @@ using UnityEngine.InputSystem;
 
 namespace PROJECT_A11.Develops.Common
 {
+
     public class Weapon :
         Item
     {

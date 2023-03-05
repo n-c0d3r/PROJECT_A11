@@ -9,6 +9,7 @@ using UnityEngine.InputSystem;
 
 namespace PROJECT_A11.Develops.Common
 {
+
     public class Item :
         MonoBehaviour
     {
@@ -18,9 +19,6 @@ namespace PROJECT_A11.Develops.Common
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         #region Fields and Private Properties
-        public Avatar personAvatar;
-
-
 
         [Space(10)]
         [Header("Read-only Details")]

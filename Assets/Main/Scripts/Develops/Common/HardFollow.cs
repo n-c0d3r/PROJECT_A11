@@ -10,6 +10,7 @@ using UnityEngine.Assertions;
 namespace PROJECT_A11.Develops.Common
 {
 
+    [AddComponentMenu("PROJECT_A11/Common/HardFollow")]
     public class HardFollow :
         MonoBehaviour
     {

@@ -10,6 +10,7 @@ using UnityEngine.InputSystem;
 namespace PROJECT_A11.Develops.Common
 {
 
+    [AddComponentMenu("PROJECT_A11/Common/FSM/PersonFSM")]
     public class PersonFSM :
         Develops.Common.PawnFSM<Person, PersonFSM>
     {

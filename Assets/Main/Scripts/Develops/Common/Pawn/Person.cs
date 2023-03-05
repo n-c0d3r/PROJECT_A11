@@ -7,6 +7,7 @@ namespace PROJECT_A11.Develops.Common
     /// <summary>
     /// a person is a human-like character that has basic abilities of human such as walking, crouching, jumping,...
     /// </summary>
+    [AddComponentMenu("PROJECT_A11/Common/Pawn/Person")]
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(CapsuleCollider))]
     [RequireComponent(typeof(PersonController))]

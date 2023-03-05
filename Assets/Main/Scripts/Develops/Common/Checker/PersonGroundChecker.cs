@@ -11,6 +11,7 @@ using UnityEngine.InputSystem;
 namespace PROJECT_A11.Develops.Common
 {
 
+    [AddComponentMenu("PROJECT_A11/Common/Checker/PersonGroundChecker")]
     public class PersonGroundChecker :
         MonoBehaviour
     {

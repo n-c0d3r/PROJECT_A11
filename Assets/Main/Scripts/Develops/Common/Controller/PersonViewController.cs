@@ -10,6 +10,7 @@ using UnityEngine.UI;
 namespace PROJECT_A11.Develops.Common
 {
 
+    [AddComponentMenu("PROJECT_A11/Common/Controller/PersonViewController")]
     public class PersonViewController :
         MonoBehaviour
     {

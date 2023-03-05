@@ -14,10 +14,10 @@ using UnityEngine.SceneManagement;
 namespace PROJECT_A11.Develops.Common
 {
     /// <summary>
-    /// PAMGroundedSpeedCurve stands for Person Animation Modifier Grounded Speed Curve
+    /// PAMLockFootCurve stands for Person Animation Modifier Lock Foot Curve
     /// </summary>
     [System.Serializable]
-    public class PAMGroundedSpeedCurve :
+    public class PAMLockFootCurve :
         Develops.Common.AnimationModifier
     {
 
@@ -27,11 +27,12 @@ namespace PROJECT_A11.Develops.Common
 
         #region Fields
         [SerializeField]
-        public string speedCurvePath = "";
+        public string curvePath = "";
         [SerializeField]
-        public string speedCurveProperty = "GroundedSpeed";
+        public string curveLProperty = "LockFootL";
+        public string curveRProperty = "LockFootR";
         [SerializeField]
-        public Type speedCurveType = typeof(Animator);
+        public Type curveType = typeof(Animator);
         [SerializeField]
         public float framesPerSecond = 30.0f;
         [SerializeField]
@@ -60,6 +61,7 @@ namespace PROJECT_A11.Develops.Common
 
 
             Person testingPerson = Instantiate(personPrefab);
+            testingPerson.transform.position = Vector3.zero;
             var animator = testingPerson.GetComponent<Animator>();
             animator.runtimeAnimatorController = animatorController;
             var personAnimationController = testingPerson.GetComponent<PersonAnimationController>();
@@ -68,11 +70,15 @@ namespace PROJECT_A11.Develops.Common
 
             int frameCount = (int)(inputClip.length * framesPerSecond);
 
-            Keyframe[] keyframes = new Keyframe[frameCount];
+            Keyframe[] keyframesL = new Keyframe[frameCount];
+            Keyframe[] keyframesR = new Keyframe[frameCount];
+
+            FootPlacement footPlacementL = personAnimationController.footLRig.GetComponent<FootPlacement>();
+            FootPlacement footPlacementR = personAnimationController.footRRig.GetComponent<FootPlacement>();
 
 
 
-            testingPerson.GetComponent<PersonAnimationController>().DisableRigs();
+            personAnimationController.DisableRigs();
 
 
 
@@ -85,9 +91,10 @@ namespace PROJECT_A11.Develops.Common
 
                 AnimationMode.SampleAnimationClip(testingPerson.gameObject, inputClip, 0);
 
-                Vector3 oldHipPos = personAnimationController.boneHip.position;
+                float maxheightL = 0.0f;
+                float maxheightR = 0.0f;
 
-                for (int i = 1; i < frameCount; ++i)
+                for (int i = 0; i < frameCount; ++i)
                 {
 
                     float time = i * inputClip.length / (float)frameCount;
@@ -95,24 +102,51 @@ namespace PROJECT_A11.Develops.Common
 
                     AnimationMode.SampleAnimationClip(testingPerson.gameObject, inputClip, time);
 
-                    Vector3 hipPos = personAnimationController.boneHip.position;
+                    Vector3 footLPos = personAnimationController.boneFootL.position - Vector3.up * footPlacementL.data.placementOffsetHeight;
+                    Vector3 footRPos = personAnimationController.boneFootR.position - Vector3.up * footPlacementL.data.placementOffsetHeight;
 
-                    float speed = (hipPos - oldHipPos).magnitude / dt;
+                    float valueL = footLPos.y;
+                    float valueR = footRPos.y;
 
-                    oldHipPos = hipPos;
+                    if (maxheightL < valueL)
+                        maxheightL = valueL;
+                    if (maxheightR < valueR)
+                        maxheightR = valueR;
 
-                    keyframes[i] = new Keyframe(time, speed);
+                    keyframesL[i] = new Keyframe(time, valueL);
+                    keyframesR[i] = new Keyframe(time, valueR);
 
+                }
 
-
-                    if (i == 1)
+                if(maxheightL >= 0.1f)
+                    for (int i = 0; i < frameCount; ++i)
                     {
 
-                        keyframes[0] = new Keyframe(0, speed);
+                        keyframesL[i].value = 1.0f - keyframesL[i].value / maxheightL;
+
+                    }
+                else
+                    for (int i = 0; i < frameCount; ++i)
+                    {
+
+                        keyframesL[i].value = 1.0f;
 
                     }
 
-                }
+                if (maxheightL >= 0.1f)
+                    for (int i = 0; i < frameCount; ++i)
+                    {
+
+                        keyframesR[i].value = 1.0f - keyframesR[i].value / maxheightR;
+
+                    }
+                else
+                    for (int i = 0; i < frameCount; ++i)
+                    {
+
+                        keyframesR[i].value = 1.0f;
+
+                    }
 
             }
             catch
@@ -134,15 +168,21 @@ namespace PROJECT_A11.Develops.Common
 
 
 
-            AnimationCurve speedCurve = new AnimationCurve(keyframes);
+            AnimationCurve curveL = new AnimationCurve(keyframesL);
+            AnimationCurve curveR = new AnimationCurve(keyframesR);
 
 
             AnimationUtility.SetEditorCurve(
                 outputClip,
-                EditorCurveBinding.FloatCurve(speedCurvePath, speedCurveType, speedCurveProperty),
-                speedCurve
+                EditorCurveBinding.FloatCurve(curvePath, curveType, curveLProperty),
+                curveL
             );
-            
+            AnimationUtility.SetEditorCurve(
+                outputClip,
+                EditorCurveBinding.FloatCurve(curvePath, curveType, curveRProperty),
+                curveR
+            );
+
         }
         #endregion
 

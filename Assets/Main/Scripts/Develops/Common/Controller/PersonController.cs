@@ -14,6 +14,7 @@ using static PROJECT_A11.Develops.Common.PersonController;
 namespace PROJECT_A11.Develops.Common
 {
 
+    [AddComponentMenu("PROJECT_A11/Common/Controller/PersonController")]
     [RequireComponent(typeof(PersonGroundChecker))]
     public class PersonController :
         Develops.Common.PawnController<Person>

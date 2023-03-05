@@ -8,6 +8,7 @@ using UnityEngine.Assertions;
 
 namespace PROJECT_A11.Develops.Common
 {
+
     public class PersonBrain :
         PawnBrain<Person, PersonController>
     {
