@@ -1006,7 +1006,7 @@ namespace PROJECT_A11.Develops.Common
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #if UNITY_EDITOR
-        private void OnDrawGizmos()
+        private void OnDrawGizmosSelected()
         {
 
             if(groundChecker.isGrounded)

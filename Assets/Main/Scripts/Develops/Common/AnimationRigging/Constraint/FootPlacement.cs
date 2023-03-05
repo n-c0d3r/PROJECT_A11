@@ -170,7 +170,7 @@ namespace PROJECT_A11.Develops.Common
 
 
 #if UNITY_EDITOR
-        private void OnDrawGizmos()
+        private void OnDrawGizmosSelected()
         {
             if (m_Data.footBone == null) return;
             if (m_Data.legUpBone == null) return;

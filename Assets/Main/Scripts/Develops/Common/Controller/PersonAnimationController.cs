@@ -26,6 +26,7 @@ namespace PROJECT_A11.Develops.Common
         public float maxAnimatorSpeed = 1.5f;
         public float groundHeightUpdatingSpeed = 8.0f;
         public float groundHeightOfHighestFalling = 2.0f;
+        public float groundHeightOfHighestFootPlacement = 0.1f;
 
         [Space(10)]
         [Header("Bone Settings")]
@@ -217,6 +218,7 @@ namespace PROJECT_A11.Develops.Common
             {
 
                 float lockWeight = m_Animator.GetFloat("LockFootL");
+                lockWeight *= 1.0f - Mathf.Clamp01(m_GroundHeight / groundHeightOfHighestFootPlacement);
 
                 m_FootPlacementL.weight = lockWeight;
                 m_FootLRig2BoneIKConstraint.weight = lockWeight;
@@ -226,6 +228,7 @@ namespace PROJECT_A11.Develops.Common
             {
 
                 float lockWeight = m_Animator.GetFloat("LockFootR");
+                lockWeight *= 1.0f - Mathf.Clamp01(m_GroundHeight / groundHeightOfHighestFootPlacement);
 
                 m_FootPlacementR.weight = lockWeight;
                 m_FootRRig2BoneIKConstraint.weight = lockWeight;
