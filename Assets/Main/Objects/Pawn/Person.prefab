@@ -1170,6 +1170,7 @@ MonoBehaviour:
     maxLegLengthCorrectionDistance: 0.36
     offsetHeight: 0.35
     checkingDistance: 1.4
+    checkingDirection: {x: 0, y: -1, z: 0}
     placementOffsetHeight: 0.084
     groundMask:
       serializedVersion: 2
@@ -1186,12 +1187,12 @@ MonoBehaviour:
     nextSphereColor: {r: 1, g: 0, b: 0.49803922, a: 1}
     nextSphereRadius: 0.045
     nextSphereThickness: 2
-    preIKFootPosition: {x: -4.1587553, y: 2.1829214, z: -4.978301}
-    preIKLegUpPosition: {x: -4.1587553, y: 3.0093546, z: -4.9525533}
-    checkedPosition: {x: -4.3999305, y: 2.0740914, z: -4.9609475}
-    checkedNormal: {x: 0.40814278, y: 0.9129139, z: -0.0027955982}
-    nextPosition: {x: -4.4524703, y: 2.0975952, z: -4.95632}
-    nextNormal: {x: 0.40814278, y: 0.9129139, z: -0.0027955982}
+    preIKFootPosition: {x: 1.5612446, y: 0.29792142, z: -5.116301}
+    preIKLegUpPosition: {x: 1.5612448, y: 1.1243546, z: -5.0905533}
+    checkedPosition: {x: 1.5612416, y: 0.0841, z: -5.1163006}
+    checkedNormal: {x: 0, y: 1, z: 0}
+    nextPosition: {x: 1.5612445, y: 0.0841, z: -5.0905533}
+    nextNormal: {x: 0, y: 1, z: 0}
     rotationV4Offset: {x: 0.013461847, y: -0.5198605, z: -0.853859, w: 0.02210545}
 --- !u!114 &3915620243744360588
 MonoBehaviour:
@@ -3399,6 +3400,7 @@ MonoBehaviour:
     maxLegLengthCorrectionDistance: 0.36
     offsetHeight: 0.35
     checkingDistance: 1.4
+    checkingDirection: {x: 0, y: -1, z: 0}
     placementOffsetHeight: 0.084
     groundMask:
       serializedVersion: 2
@@ -3415,12 +3417,12 @@ MonoBehaviour:
     nextSphereColor: {r: 1, g: 0, b: 0.49803922, a: 1}
     nextSphereRadius: 0.045
     nextSphereThickness: 2
-    preIKFootPosition: {x: -4.3412447, y: 2.182922, z: -4.9783006}
-    preIKLegUpPosition: {x: -4.341244, y: 3.0093548, z: -4.9525533}
-    checkedPosition: {x: -4.6004057, y: 2.1637375, z: -4.954981}
-    checkedNormal: {x: 0.4081428, y: 0.9129139, z: -0.0027955442}
-    nextPosition: {x: -4.634869, y: 2.1791456, z: -4.9547796}
-    nextNormal: {x: 0.4081428, y: 0.9129139, z: -0.0027955442}
+    preIKFootPosition: {x: 1.3787555, y: 0.2979218, z: -5.1163006}
+    preIKLegUpPosition: {x: 1.3787558, y: 1.1243548, z: -5.0905533}
+    checkedPosition: {x: 1.378756, y: 0.0841, z: -5.116301}
+    checkedNormal: {x: 0, y: 1, z: 0}
+    nextPosition: {x: 1.3787565, y: 0.0841, z: -5.0905538}
+    nextNormal: {x: 0, y: 1, z: 0}
     rotationV4Offset: {x: -0.013462011, y: -0.5198605, z: -0.85385895, w: -0.022105347}
 --- !u!114 &5633599602511903706
 MonoBehaviour:
@@ -4967,6 +4969,7 @@ MonoBehaviour:
   maxAnimatorSpeed: 1.5
   groundHeightUpdatingSpeed: 8
   groundHeightOfHighestFalling: 2
+  groundHeightOfHighestFootPlacement: 0.1
   boneHip: {fileID: 6360172330601233070}
   boneFootL: {fileID: 1175309761787816801}
   boneFootR: {fileID: 6133087615747017247}
@@ -4977,9 +4980,19 @@ MonoBehaviour:
   handLRig: {fileID: 4392408974240002776}
   footRRig: {fileID: 2373078808612960463}
   footLRig: {fileID: 5136565652395938008}
+  footLPlacementMinUpdatingSpeed: 15
+  footRPlacementMinUpdatingSpeed: 15
+  footLPlacementMaxUpdatingSpeed: 100
+  footRPlacementMaxUpdatingSpeed: 100
+  footLRigMaxSpeed: 0.5
+  footRRigMaxSpeed: 0.5
   m_MoveInput: {x: 0, y: 0, z: 0}
   m_AnimationSpeed: 1
   m_GroundHeight: 0
+  m_PreviousFootLPos: {x: 0, y: 0, z: 0}
+  m_PreviousFootRPos: {x: 0, y: 0, z: 0}
+  m_FootLSpeed: 0
+  m_FootRSpeed: 0
 --- !u!114 &7569016800543779027
 MonoBehaviour:
   m_ObjectHideFlags: 0

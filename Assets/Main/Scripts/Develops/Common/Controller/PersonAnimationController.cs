@@ -47,6 +47,14 @@ namespace PROJECT_A11.Develops.Common
         public Transform footRRig;
         public Transform footLRig;
 
+        public float footLPlacementMinUpdatingSpeed = 15.0f;
+        public float footRPlacementMinUpdatingSpeed = 15.0f;
+        public float footLPlacementMaxUpdatingSpeed = 1000.0f;
+        public float footRPlacementMaxUpdatingSpeed = 1000.0f;
+
+        public float footLRigMaxSpeed = 1.0f;
+        public float footRRigMaxSpeed = 1.0f;
+
 
 
         [Space(10)]
@@ -60,6 +68,22 @@ namespace PROJECT_A11.Develops.Common
         [ReadOnly]
         [SerializeField]
         private float m_GroundHeight = 0.0f;
+
+        [ReadOnly]
+        [SerializeField]
+        private Vector3 m_PreviousFootLPos;
+        [ReadOnly]
+        [SerializeField]
+        private Vector3 m_PreviousFootRPos;
+
+        [ReadOnly]
+        [SerializeField]
+        private float m_FootLSpeed = 0.0f;
+        public float footLSpeed { get => m_FootLSpeed; }
+        [ReadOnly]
+        [SerializeField]
+        private float m_FootRSpeed = 0.0f;
+        public float footRSpeed { get => m_FootRSpeed; }
 
         private TwoBoneIKConstraint m_HandRRig2BoneIKConstraint;
         private MultiRotationConstraint m_HandRRigRotationConstraint;
@@ -223,6 +247,10 @@ namespace PROJECT_A11.Develops.Common
                 m_FootPlacementL.weight = lockWeight;
                 m_FootLRig2BoneIKConstraint.weight = lockWeight;
 
+                m_FootPlacementL.data.updatingSpeed = Mathf.Lerp(footLPlacementMinUpdatingSpeed, footLPlacementMaxUpdatingSpeed, Mathf.Clamp01(m_FootLSpeed / footLRigMaxSpeed));
+
+                m_FootPlacementL.data.checkingDirection = -pawn.controller.groundChecker.checkedNormal;
+
             }
             if (m_FootPlacementR)
             {
@@ -232,6 +260,32 @@ namespace PROJECT_A11.Develops.Common
 
                 m_FootPlacementR.weight = lockWeight;
                 m_FootRRig2BoneIKConstraint.weight = lockWeight;
+
+                m_FootPlacementR.data.updatingSpeed = Mathf.Lerp(footRPlacementMinUpdatingSpeed, footRPlacementMaxUpdatingSpeed, Mathf.Clamp01(m_FootRSpeed / footRRigMaxSpeed));
+
+                m_FootPlacementR.data.checkingDirection = -pawn.controller.groundChecker.checkedNormal;
+
+            }
+
+        }
+
+        private void UpdateFootsVelocity(float deltaTime)
+        {
+
+            if (footLRig != null)
+            {
+
+                m_FootLSpeed = (footLRig.position - m_PreviousFootLPos).magnitude / deltaTime;
+
+                m_PreviousFootLPos = footLRig.position;
+
+            }
+            if (footRRig != null)
+            {
+
+                m_FootRSpeed = (footRRig.position - m_PreviousFootRPos).magnitude / deltaTime;
+
+                m_PreviousFootRPos = footRRig.position;
 
             }
 
@@ -300,12 +354,16 @@ namespace PROJECT_A11.Develops.Common
                 m_FootPlacementL = footLRig.GetComponent<FootPlacement>();
                 m_FootLRig2BoneIKConstraint = footLRig.GetComponent<TwoBoneIKConstraint>();
 
+                m_PreviousFootLPos = footLRig.position;
+
             }
             if (footRRig != null)
             {
 
                 m_FootPlacementR = footRRig.GetComponent<FootPlacement>();
                 m_FootRRig2BoneIKConstraint = footRRig.GetComponent<TwoBoneIKConstraint>();
+
+                m_PreviousFootRPos = footRRig.position;
 
             }
 
@@ -316,11 +374,18 @@ namespace PROJECT_A11.Develops.Common
 
             base.Update();
 
+
+
+            UpdateFootsVelocity(Time.fixedDeltaTime);
+
+
+
             UpdateEnvironment(Time.deltaTime);
 
 
-            
-            switch(controller.currentMovement.environment)
+
+
+            switch (controller.currentMovement.environment)
             {
 
                 case PersonController.Environment.Grounded:

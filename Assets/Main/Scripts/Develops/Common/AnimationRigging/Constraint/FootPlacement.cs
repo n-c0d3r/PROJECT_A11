@@ -21,12 +21,12 @@ namespace PROJECT_A11.Develops.Common
         >
     {
 
-        private void FindFootPlacement(Vector3 preIKFootPosition, Vector3 preIKLegUpPosition, float maxLegLength, float offsetHeight, float checkingDistance, LayerMask groundMask)
+        private void FindFootPlacement(Vector3 preIKFootPosition, Vector3 preIKLegUpPosition, float maxLegLength, float offsetHeight, float checkingDistance, Vector3 checkingDirection, LayerMask groundMask)
         {
 
             RaycastHit hit = new RaycastHit();
 
-            if (Physics.Raycast(preIKFootPosition + Vector3.up * offsetHeight, Vector3.down, out hit, checkingDistance, groundMask))
+            if (Physics.Raycast(preIKFootPosition + (-m_Data.checkingDirection) * offsetHeight, m_Data.checkingDirection, out hit, checkingDistance, groundMask))
             {
 
 
@@ -36,14 +36,14 @@ namespace PROJECT_A11.Develops.Common
             {
 
                 hit.point = preIKFootPosition;
-                hit.normal = Vector3.up;
+                hit.normal = (-m_Data.checkingDirection);
 
             }
 
-            if (Vector3.Dot(Vector3.up, hit.normal) < m_Data.minGroundSlope)
+            if (Vector3.Dot((-m_Data.checkingDirection), hit.normal) < m_Data.minGroundSlope)
             {
 
-                hit.normal = Vector3.up;
+                hit.normal = (-m_Data.checkingDirection);
 
             }
 
@@ -100,10 +100,10 @@ namespace PROJECT_A11.Develops.Common
             nextPosition = hit.point + hit.normal * m_Data.placementOffsetHeight;
             nextNormal = hit.normal;
 
-            if (Vector3.Dot(Vector3.up, nextNormal) < m_Data.minGroundSlope)
+            if (Vector3.Dot((-m_Data.checkingDirection), nextNormal) < m_Data.minGroundSlope)
             {
 
-                nextNormal = Vector3.up;
+                nextNormal = (-m_Data.checkingDirection);
 
             }
 
@@ -119,8 +119,8 @@ namespace PROJECT_A11.Develops.Common
         private void Awake()
         {
 
-            m_Data.checkedNormal = Vector3.up;
-            m_Data.nextNormal = Vector3.up;
+            m_Data.checkedNormal = (-m_Data.checkingDirection);
+            m_Data.nextNormal = (-m_Data.checkingDirection);
 
             if (m_Data.footBone != null)
             {
@@ -144,7 +144,7 @@ namespace PROJECT_A11.Develops.Common
         {
 
             if (m_Data.footBone != null)
-                FindFootPlacement(m_Data.preIKFootPosition - Vector3.up * m_Data.placementOffsetHeight, m_Data.preIKLegUpPosition, m_Data.maxLegLength, m_Data.offsetHeight, m_Data.checkingDistance, m_Data.groundMask);
+                FindFootPlacement(m_Data.preIKFootPosition - (-m_Data.checkingDirection) * m_Data.placementOffsetHeight, m_Data.preIKLegUpPosition, m_Data.maxLegLength, m_Data.offsetHeight, m_Data.checkingDistance, m_Data.checkingDirection, m_Data.groundMask);
 
         }
 
@@ -180,23 +180,23 @@ namespace PROJECT_A11.Develops.Common
 
                 m_Data.preIKFootPosition = m_Data.footBone.position;
                 m_Data.preIKLegUpPosition = m_Data.legUpBone.position;
-                FindFootPlacement(m_Data.preIKFootPosition - Vector3.up * m_Data.placementOffsetHeight, m_Data.preIKLegUpPosition, m_Data.maxLegLength, m_Data.offsetHeight, m_Data.checkingDistance, m_Data.groundMask);
+                FindFootPlacement(m_Data.preIKFootPosition - (-m_Data.checkingDirection) * m_Data.placementOffsetHeight, m_Data.preIKLegUpPosition, m_Data.maxLegLength, m_Data.offsetHeight, m_Data.checkingDistance, m_Data.checkingDirection, m_Data.groundMask);
 
             }
 
             Debug.DrawLine(
-                m_Data.preIKFootPosition - Vector3.up * m_Data.placementOffsetHeight + Vector3.up * m_Data.offsetHeight,
-                m_Data.preIKFootPosition - Vector3.up * m_Data.placementOffsetHeight,
+                m_Data.preIKFootPosition - (-m_Data.checkingDirection) * m_Data.placementOffsetHeight + (-m_Data.checkingDirection) * m_Data.offsetHeight,
+                m_Data.preIKFootPosition - (-m_Data.checkingDirection) * m_Data.placementOffsetHeight,
                 m_Data.checkingRayColorTop
             );
             Debug.DrawLine(
-                m_Data.preIKFootPosition - Vector3.up * m_Data.placementOffsetHeight,
+                m_Data.preIKFootPosition - (-m_Data.checkingDirection) * m_Data.placementOffsetHeight,
                 m_Data.checkedPosition,
                 m_Data.checkingRayColorMiddle
             );
             Debug.DrawLine(
                 m_Data.checkedPosition,
-                m_Data.preIKFootPosition - Vector3.up * m_Data.placementOffsetHeight + Vector3.up * m_Data.offsetHeight + Vector3.down * m_Data.checkingDistance,
+                m_Data.preIKFootPosition - (-m_Data.checkingDirection) * m_Data.placementOffsetHeight + (-m_Data.checkingDirection) * m_Data.offsetHeight + (m_Data.checkingDirection) * m_Data.checkingDistance,
                 m_Data.checkingRayColorBottom
             );
 
@@ -231,6 +231,7 @@ namespace PROJECT_A11.Develops.Common
 
         public float offsetHeight;
         public float checkingDistance;
+        public Vector3 checkingDirection;
         public float placementOffsetHeight;
         public LayerMask groundMask;
 
@@ -309,6 +310,7 @@ namespace PROJECT_A11.Develops.Common
 
             offsetHeight = 0.1f;
             checkingDistance = 0.1f;
+            checkingDirection = Vector3.down;
             placementOffsetHeight = 0.0f;
 
             minGroundSlope = 0.4f;
@@ -417,8 +419,8 @@ namespace PROJECT_A11.Develops.Common
 
             float updatingSpeed = updatingSpeedProperty.Get(stream);
 
-            ikFoot.SetPosition(stream, Vector3.Lerp(currIKFootPosition, targetIKFootPosition, stream.deltaTime * updatingSpeed));
-            ikFoot.SetRotation(stream, Quaternion.Lerp(currIKFootRotation, targetIKFootRotation, stream.deltaTime * updatingSpeed));
+            ikFoot.SetPosition(stream, Vector3.Lerp(currIKFootPosition, targetIKFootPosition, Mathf.Clamp01(stream.deltaTime * updatingSpeed)));
+            ikFoot.SetRotation(stream, Quaternion.Lerp(currIKFootRotation, targetIKFootRotation, Mathf.Clamp01(stream.deltaTime * updatingSpeed)));
 
         }
 

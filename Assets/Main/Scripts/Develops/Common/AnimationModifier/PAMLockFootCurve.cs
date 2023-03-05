@@ -118,7 +118,7 @@ namespace PROJECT_A11.Develops.Common
 
                 }
 
-                if(maxheightL >= 0.1f)
+                if(maxheightL >= 0.01f)
                     for (int i = 0; i < frameCount; ++i)
                     {
 
@@ -133,7 +133,7 @@ namespace PROJECT_A11.Develops.Common
 
                     }
 
-                if (maxheightL >= 0.1f)
+                if (maxheightL >= 0.01f)
                     for (int i = 0; i < frameCount; ++i)
                     {
 
