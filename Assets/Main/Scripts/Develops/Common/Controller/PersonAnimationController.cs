@@ -47,13 +47,16 @@ namespace PROJECT_A11.Develops.Common
         public Transform footRRig;
         public Transform footLRig;
 
-        public float footLPlacementMinUpdatingSpeed = 15.0f;
-        public float footRPlacementMinUpdatingSpeed = 15.0f;
-        public float footLPlacementMaxUpdatingSpeed = 1000.0f;
-        public float footRPlacementMaxUpdatingSpeed = 1000.0f;
-
-        public float footLRigMaxSpeed = 1.0f;
-        public float footRRigMaxSpeed = 1.0f;
+        public float footLPlacementMinPreIKUpdatingSpeed = 0.0f;
+        public float footRPlacementMinPreIKUpdatingSpeed = 0.0f;
+        public float footLPlacementMaxPreIKUpdatingSpeed = 100.0f;
+        public float footRPlacementMaxPreIKUpdatingSpeed = 100.0f;
+        public float footLPlacementMinIKUpdatingSpeed = 15.0f;
+        public float footRPlacementMinIKUpdatingSpeed = 15.0f;
+        public float footLPlacementMaxIKUpdatingSpeed = 100.0f;
+        public float footRPlacementMaxIKUpdatingSpeed = 100.0f;
+        public float footLPlacementMaxLegLengthCorrectionDistance = 0.36f;
+        public float footRPlacementMaxLegLengthCorrectionDistance = 0.36f;
 
 
 
@@ -65,25 +68,11 @@ namespace PROJECT_A11.Develops.Common
         [ReadOnly]
         [SerializeField]
         private float m_AnimationSpeed = 1.0f;
+
         [ReadOnly]
         [SerializeField]
+        [SyncSceneToStream]
         private float m_GroundHeight = 0.0f;
-
-        [ReadOnly]
-        [SerializeField]
-        private Vector3 m_PreviousFootLPos;
-        [ReadOnly]
-        [SerializeField]
-        private Vector3 m_PreviousFootRPos;
-
-        [ReadOnly]
-        [SerializeField]
-        private float m_FootLSpeed = 0.0f;
-        public float footLSpeed { get => m_FootLSpeed; }
-        [ReadOnly]
-        [SerializeField]
-        private float m_FootRSpeed = 0.0f;
-        public float footRSpeed { get => m_FootRSpeed; }
 
         private TwoBoneIKConstraint m_HandRRig2BoneIKConstraint;
         private MultiRotationConstraint m_HandRRigRotationConstraint;
@@ -238,16 +227,22 @@ namespace PROJECT_A11.Develops.Common
         private void UpdateFootRigs()
         {
 
+            //float heightBasedWeight = ((controller.currentMovement.environment == PersonController.Environment.Grounded) ? 1.0f : 0.0f);
+            float heightBasedWeight = 1.0f - Mathf.Clamp01(m_GroundHeight / groundHeightOfHighestFootPlacement);
+
             if (m_FootPlacementL)
             {
 
                 float lockWeight = m_Animator.GetFloat("LockFootL");
-                lockWeight *= 1.0f - Mathf.Clamp01(m_GroundHeight / groundHeightOfHighestFootPlacement);
+                lockWeight *= heightBasedWeight;
 
                 m_FootPlacementL.weight = lockWeight;
                 m_FootLRig2BoneIKConstraint.weight = lockWeight;
 
-                m_FootPlacementL.data.updatingSpeed = Mathf.Lerp(footLPlacementMinUpdatingSpeed, footLPlacementMaxUpdatingSpeed, Mathf.Clamp01(m_FootLSpeed / footLRigMaxSpeed));
+                m_FootPlacementL.data.preIKUpdatingSpeed = Mathf.Lerp(footLPlacementMinPreIKUpdatingSpeed, footLPlacementMaxPreIKUpdatingSpeed, (1.0f - lockWeight));
+                m_FootPlacementL.data.ikUpdatingSpeed = Mathf.Lerp(footLPlacementMinIKUpdatingSpeed, footLPlacementMaxIKUpdatingSpeed, heightBasedWeight);
+                m_FootPlacementL.data.maxLegLengthCorrectionDistance = Mathf.Lerp(0.0f, footLPlacementMaxLegLengthCorrectionDistance, heightBasedWeight);
+                m_FootPlacementL.data.groundStrength = Mathf.Lerp(0.0f, 1.0f, heightBasedWeight);
 
                 m_FootPlacementL.data.checkingDirection = -pawn.controller.groundChecker.checkedNormal;
 
@@ -256,36 +251,17 @@ namespace PROJECT_A11.Develops.Common
             {
 
                 float lockWeight = m_Animator.GetFloat("LockFootR");
-                lockWeight *= 1.0f - Mathf.Clamp01(m_GroundHeight / groundHeightOfHighestFootPlacement);
+                lockWeight *= heightBasedWeight;
 
                 m_FootPlacementR.weight = lockWeight;
                 m_FootRRig2BoneIKConstraint.weight = lockWeight;
 
-                m_FootPlacementR.data.updatingSpeed = Mathf.Lerp(footRPlacementMinUpdatingSpeed, footRPlacementMaxUpdatingSpeed, Mathf.Clamp01(m_FootRSpeed / footRRigMaxSpeed));
+                m_FootPlacementR.data.preIKUpdatingSpeed = Mathf.Lerp(footRPlacementMinPreIKUpdatingSpeed, footRPlacementMaxPreIKUpdatingSpeed, (1.0f - lockWeight));
+                m_FootPlacementR.data.ikUpdatingSpeed = Mathf.Lerp(footRPlacementMinIKUpdatingSpeed, footRPlacementMaxIKUpdatingSpeed, heightBasedWeight);
+                m_FootPlacementR.data.maxLegLengthCorrectionDistance = Mathf.Lerp(0.0f, footRPlacementMaxLegLengthCorrectionDistance, heightBasedWeight);
+                m_FootPlacementR.data.groundStrength = Mathf.Lerp(0.0f, 1.0f, heightBasedWeight);
 
                 m_FootPlacementR.data.checkingDirection = -pawn.controller.groundChecker.checkedNormal;
-
-            }
-
-        }
-
-        private void UpdateFootsVelocity(float deltaTime)
-        {
-
-            if (footLRig != null)
-            {
-
-                m_FootLSpeed = (footLRig.position - m_PreviousFootLPos).magnitude / deltaTime;
-
-                m_PreviousFootLPos = footLRig.position;
-
-            }
-            if (footRRig != null)
-            {
-
-                m_FootRSpeed = (footRRig.position - m_PreviousFootRPos).magnitude / deltaTime;
-
-                m_PreviousFootRPos = footRRig.position;
 
             }
 
@@ -354,8 +330,6 @@ namespace PROJECT_A11.Develops.Common
                 m_FootPlacementL = footLRig.GetComponent<FootPlacement>();
                 m_FootLRig2BoneIKConstraint = footLRig.GetComponent<TwoBoneIKConstraint>();
 
-                m_PreviousFootLPos = footLRig.position;
-
             }
             if (footRRig != null)
             {
@@ -363,9 +337,12 @@ namespace PROJECT_A11.Develops.Common
                 m_FootPlacementR = footRRig.GetComponent<FootPlacement>();
                 m_FootRRig2BoneIKConstraint = footRRig.GetComponent<TwoBoneIKConstraint>();
 
-                m_PreviousFootRPos = footRRig.position;
-
             }
+
+
+
+            UpdateHandRigs();
+            UpdateFootRigs();
 
         }
 
@@ -373,10 +350,6 @@ namespace PROJECT_A11.Develops.Common
         {
 
             base.Update();
-
-
-
-            UpdateFootsVelocity(Time.fixedDeltaTime);
 
 
 
@@ -404,12 +377,12 @@ namespace PROJECT_A11.Develops.Common
 
 
 
+            UpdateBodyState(Time.deltaTime);
+
+
+
             UpdateHandRigs();
             UpdateFootRigs();
-
-
-
-            UpdateBodyState(Time.deltaTime);
 
         }
         #endregion

@@ -21,12 +21,12 @@ namespace PROJECT_A11.Develops.Common
         >
     {
 
-        private void FindFootPlacement(Vector3 preIKFootPosition, Vector3 preIKLegUpPosition, float maxLegLength, float offsetHeight, float checkingDistance, Vector3 checkingDirection, LayerMask groundMask)
+        private void FindFootPlacement(Vector3 preIKFootPosition, Vector3 preIKLegUpPosition, float maxLegLength, float checkingHeightOffset, float checkingDistance, Vector3 checkingDirection, LayerMask groundMask)
         {
 
             RaycastHit hit = new RaycastHit();
 
-            if (Physics.Raycast(preIKFootPosition + (-m_Data.checkingDirection) * offsetHeight, m_Data.checkingDirection, out hit, checkingDistance, groundMask))
+            if (Physics.Raycast(preIKFootPosition + (-m_Data.checkingDirection) * checkingHeightOffset, m_Data.checkingDirection, out hit, checkingDistance, groundMask))
             {
 
 
@@ -47,9 +47,11 @@ namespace PROJECT_A11.Develops.Common
 
             }
 
+            hit.point = Vector3.Lerp(preIKFootPosition, hit.point, m_Data.groundStrength);
 
 
-            Vector3 nextPosition = hit.point + hit.normal * m_Data.placementOffsetHeight;
+
+            Vector3 nextPosition = hit.point + hit.normal * m_Data.footHeight;
             Vector3 nextNormal = hit.normal;
 
             m_Data.checkedPosition = nextPosition;
@@ -83,7 +85,7 @@ namespace PROJECT_A11.Develops.Common
 
 
             /// second layer ground checking
-            if (Physics.Raycast(nextPosition - nextNormal * m_Data.placementOffsetHeight + (preIKLegUpPosition - nextPosition).normalized * offsetHeight, (nextPosition - preIKLegUpPosition).normalized, out hit, checkingDistance, groundMask))
+            if (Physics.Raycast(nextPosition - nextNormal * m_Data.footHeight + (preIKLegUpPosition - nextPosition).normalized * checkingHeightOffset, (nextPosition - preIKLegUpPosition).normalized, out hit, checkingDistance, groundMask))
             {
 
 
@@ -92,12 +94,12 @@ namespace PROJECT_A11.Develops.Common
             else
             {
 
-                hit.point = nextPosition - nextNormal * m_Data.placementOffsetHeight;
+                hit.point = nextPosition - nextNormal * m_Data.footHeight;
                 hit.normal = nextNormal;
 
             }
 
-            nextPosition = hit.point + hit.normal * m_Data.placementOffsetHeight;
+            nextPosition = hit.point + hit.normal * m_Data.footHeight;
             nextNormal = hit.normal;
 
             if (Vector3.Dot((-m_Data.checkingDirection), nextNormal) < m_Data.minGroundSlope)
@@ -109,8 +111,8 @@ namespace PROJECT_A11.Develops.Common
 
 
 
-            m_Data.nextPosition = nextPosition;
-            m_Data.nextNormal = nextNormal;
+            m_Data.nextPosition = Vector3.Lerp(m_Data.checkedPosition, nextPosition, Mathf.Clamp01(m_Data.groundStrength));
+            m_Data.nextNormal = Vector3.Lerp(m_Data.checkedNormal, nextNormal, Mathf.Clamp01(m_Data.groundStrength));
 
         }
 
@@ -126,6 +128,7 @@ namespace PROJECT_A11.Develops.Common
             {
 
                 m_Data.preIKFootPosition = m_Data.footBone.position;
+                m_Data.preIKFootRotationV4 = new Vector4(m_Data.footBone.rotation.x, m_Data.footBone.rotation.y, m_Data.footBone.rotation.z, m_Data.footBone.rotation.w);
                 m_Data.checkedPosition = m_Data.preIKFootPosition;
                 m_Data.nextPosition = m_Data.preIKFootPosition;
 
@@ -144,7 +147,7 @@ namespace PROJECT_A11.Develops.Common
         {
 
             if (m_Data.footBone != null)
-                FindFootPlacement(m_Data.preIKFootPosition - (-m_Data.checkingDirection) * m_Data.placementOffsetHeight, m_Data.preIKLegUpPosition, m_Data.maxLegLength, m_Data.offsetHeight, m_Data.checkingDistance, m_Data.checkingDirection, m_Data.groundMask);
+                FindFootPlacement(m_Data.preIKFootPosition - (-m_Data.checkingDirection) * m_Data.footHeight, m_Data.preIKLegUpPosition, m_Data.maxLegLength, m_Data.checkingHeightOffset, m_Data.checkingDistance, m_Data.checkingDirection, m_Data.groundMask);
 
         }
 
@@ -179,24 +182,25 @@ namespace PROJECT_A11.Develops.Common
             {
 
                 m_Data.preIKFootPosition = m_Data.footBone.position;
+                m_Data.preIKFootRotationV4 = new Vector4(m_Data.footBone.rotation.x, m_Data.footBone.rotation.y, m_Data.footBone.rotation.z, m_Data.footBone.rotation.w);
                 m_Data.preIKLegUpPosition = m_Data.legUpBone.position;
-                FindFootPlacement(m_Data.preIKFootPosition - (-m_Data.checkingDirection) * m_Data.placementOffsetHeight, m_Data.preIKLegUpPosition, m_Data.maxLegLength, m_Data.offsetHeight, m_Data.checkingDistance, m_Data.checkingDirection, m_Data.groundMask);
+                FindFootPlacement(m_Data.preIKFootPosition - (-m_Data.checkingDirection) * m_Data.footHeight, m_Data.preIKLegUpPosition, m_Data.maxLegLength, m_Data.checkingHeightOffset, m_Data.checkingDistance, m_Data.checkingDirection, m_Data.groundMask);
 
             }
 
             Debug.DrawLine(
-                m_Data.preIKFootPosition - (-m_Data.checkingDirection) * m_Data.placementOffsetHeight + (-m_Data.checkingDirection) * m_Data.offsetHeight,
-                m_Data.preIKFootPosition - (-m_Data.checkingDirection) * m_Data.placementOffsetHeight,
+                m_Data.preIKFootPosition - (-m_Data.checkingDirection) * m_Data.footHeight + (-m_Data.checkingDirection) * m_Data.checkingHeightOffset,
+                m_Data.preIKFootPosition - (-m_Data.checkingDirection) * m_Data.footHeight,
                 m_Data.checkingRayColorTop
             );
             Debug.DrawLine(
-                m_Data.preIKFootPosition - (-m_Data.checkingDirection) * m_Data.placementOffsetHeight,
+                m_Data.preIKFootPosition - (-m_Data.checkingDirection) * m_Data.footHeight,
                 m_Data.checkedPosition,
                 m_Data.checkingRayColorMiddle
             );
             Debug.DrawLine(
                 m_Data.checkedPosition,
-                m_Data.preIKFootPosition - (-m_Data.checkingDirection) * m_Data.placementOffsetHeight + (-m_Data.checkingDirection) * m_Data.offsetHeight + (m_Data.checkingDirection) * m_Data.checkingDistance,
+                m_Data.preIKFootPosition - (-m_Data.checkingDirection) * m_Data.footHeight + (-m_Data.checkingDirection) * m_Data.checkingHeightOffset + (m_Data.checkingDirection) * m_Data.checkingDistance,
                 m_Data.checkingRayColorBottom
             );
 
@@ -227,23 +231,17 @@ namespace PROJECT_A11.Develops.Common
 
 
         public float maxLegLength;
-        public float maxLegLengthCorrectionDistance;
 
-        public float offsetHeight;
+        public float checkingHeightOffset;
         public float checkingDistance;
         public Vector3 checkingDirection;
-        public float placementOffsetHeight;
+        public float footHeight;
         public LayerMask groundMask;
 
         [Range(0.0f, 1.0f)]
         public float minGroundSlope;
 
         public Quaternion rotationOffset;
-
-
-
-        [SyncSceneToStream]
-        public float updatingSpeed;
 
 
 
@@ -272,6 +270,9 @@ namespace PROJECT_A11.Develops.Common
         public Vector3 preIKFootPosition;
         [ReadOnly]
         [SyncSceneToStream]
+        public Vector4 preIKFootRotationV4;
+        [ReadOnly]
+        [SyncSceneToStream]
         public Vector3 preIKLegUpPosition;
 
         [ReadOnly]
@@ -289,6 +290,19 @@ namespace PROJECT_A11.Develops.Common
         [ReadOnly]
         [SyncSceneToStream]
         public Vector4 rotationV4Offset;
+
+        [ReadOnly]
+        [Range(0.0f, 1.0f)]
+        public float groundStrength;
+
+        [ReadOnly]
+        public float maxLegLengthCorrectionDistance;
+        [ReadOnly]
+        [SyncSceneToStream]
+        public float preIKUpdatingSpeed;
+        [ReadOnly]
+        [SyncSceneToStream]
+        public float ikUpdatingSpeed;
 
 
 
@@ -308,16 +322,19 @@ namespace PROJECT_A11.Develops.Common
             maxLegLength = 0.8f;
             maxLegLengthCorrectionDistance = 0.1f;
 
-            offsetHeight = 0.1f;
+            checkingHeightOffset = 0.1f;
             checkingDistance = 0.1f;
             checkingDirection = Vector3.down;
-            placementOffsetHeight = 0.0f;
+            footHeight = 0.0f;
+
+            groundStrength = 1.0f;
 
             minGroundSlope = 0.4f;
 
 
 
-            updatingSpeed = 1.0f;
+            preIKUpdatingSpeed = 1.0f;
+            ikUpdatingSpeed = 1.0f;
 
 
 
@@ -353,6 +370,7 @@ namespace PROJECT_A11.Develops.Common
 
 
         public Vector3Property preIKFootPositionProperty;
+        public Vector4Property preIKFootRotationV4Property;
         public Vector3Property preIKLegUpPositionProperty;
 
         public Vector3Property nextPositionProperty;
@@ -362,7 +380,8 @@ namespace PROJECT_A11.Develops.Common
 
 
 
-        public FloatProperty updatingSpeedProperty;
+        public FloatProperty preIKUpdatingSpeedProperty;
+        public FloatProperty ikUpdatingSpeedProperty;
 
 
 
@@ -378,12 +397,21 @@ namespace PROJECT_A11.Develops.Common
 
 
 
+            float preIKUpdatingSpeed = preIKUpdatingSpeedProperty.Get(stream);
+            float ikUpdatingSpeed = ikUpdatingSpeedProperty.Get(stream);
+
+
+
             Vector3 preIKFootPosition = footBone.GetPosition(stream);
+            preIKFootPosition = Vector3.Lerp(preIKFootPositionProperty.Get(stream), preIKFootPosition, Mathf.Clamp01(stream.deltaTime * preIKUpdatingSpeed));
             preIKFootPositionProperty.Set(stream, preIKFootPosition);
             Vector3 preIKLegUpPosition = legUpBone.GetPosition(stream);
             preIKLegUpPositionProperty.Set(stream, preIKLegUpPosition);
 
+            Vector4 lastPreIKFootRotationV4 = preIKFootRotationV4Property.Get(stream);
             Quaternion preIKFootRotation = footBone.GetRotation(stream);
+            preIKFootRotation = Quaternion.Lerp(new Quaternion(lastPreIKFootRotationV4.x, lastPreIKFootRotationV4.y, lastPreIKFootRotationV4.z, lastPreIKFootRotationV4.w), preIKFootRotation, Mathf.Clamp01(stream.deltaTime * preIKUpdatingSpeed));
+            preIKFootRotationV4Property.Set(stream, new Vector4(preIKFootRotation.x, preIKFootRotation.y, preIKFootRotation.z, preIKFootRotation.w));
 
 
 
@@ -417,10 +445,10 @@ namespace PROJECT_A11.Develops.Common
             Vector3 currIKFootPosition = ikFoot.GetPosition(stream);
             Quaternion currIKFootRotation = ikFoot.GetRotation(stream);
 
-            float updatingSpeed = updatingSpeedProperty.Get(stream);
-
-            ikFoot.SetPosition(stream, Vector3.Lerp(currIKFootPosition, targetIKFootPosition, Mathf.Clamp01(stream.deltaTime * updatingSpeed)));
-            ikFoot.SetRotation(stream, Quaternion.Lerp(currIKFootRotation, targetIKFootRotation, Mathf.Clamp01(stream.deltaTime * updatingSpeed)));
+            //ikFoot.SetPosition(stream, targetIKFootPosition);
+            ikFoot.SetPosition(stream, Vector3.Lerp(currIKFootPosition, targetIKFootPosition, Mathf.Clamp01(stream.deltaTime * ikUpdatingSpeed)));
+            //ikFoot.SetRotation(stream, targetIKFootRotation);
+            ikFoot.SetRotation(stream, Quaternion.Lerp(currIKFootRotation, targetIKFootRotation, Mathf.Clamp01(stream.deltaTime * ikUpdatingSpeed)));
 
         }
 
@@ -451,6 +479,7 @@ namespace PROJECT_A11.Develops.Common
 
 
                 preIKFootPositionProperty = Vector3Property.Bind(animator, component, "m_Data." + nameof(data.preIKFootPosition)),
+                preIKFootRotationV4Property = Vector4Property.Bind(animator, component, "m_Data." + nameof(data.preIKFootRotationV4)),
                 preIKLegUpPositionProperty = Vector3Property.Bind(animator, component, "m_Data." + nameof(data.preIKLegUpPosition)),
 
                 nextPositionProperty = Vector3Property.Bind(animator, component, "m_Data." + nameof(data.nextPosition)),
@@ -460,9 +489,11 @@ namespace PROJECT_A11.Develops.Common
 
 
 
-                updatingSpeedProperty = FloatProperty.Bind(animator, component, "m_Data." + nameof(data.updatingSpeed)),
+                preIKUpdatingSpeedProperty = FloatProperty.Bind(animator, component, "m_Data." + nameof(data.preIKUpdatingSpeed)),
+                ikUpdatingSpeedProperty = FloatProperty.Bind(animator, component, "m_Data." + nameof(data.ikUpdatingSpeed)),
 
             };
+
         }
 
         public override void Destroy(FootPlacementJob job)

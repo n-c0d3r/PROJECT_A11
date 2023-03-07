@@ -102,8 +102,8 @@ namespace PROJECT_A11.Develops.Common
 
                     AnimationMode.SampleAnimationClip(testingPerson.gameObject, inputClip, time);
 
-                    Vector3 footLPos = personAnimationController.boneFootL.position - Vector3.up * footPlacementL.data.placementOffsetHeight;
-                    Vector3 footRPos = personAnimationController.boneFootR.position - Vector3.up * footPlacementL.data.placementOffsetHeight;
+                    Vector3 footLPos = personAnimationController.boneFootL.position - Vector3.up * footPlacementL.data.footHeight;
+                    Vector3 footRPos = personAnimationController.boneFootR.position - Vector3.up * footPlacementL.data.footHeight;
 
                     float valueL = footLPos.y;
                     float valueR = footRPos.y;
