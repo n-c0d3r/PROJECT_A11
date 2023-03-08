@@ -450,7 +450,7 @@ namespace PROJECT_A11.Develops.Common
         private void UpdateInput(float deltaTime)
         {
 
-            m_Input.targetMoveDirection = groundForward * m_Input.targetMoveInput.y + groundRight * m_Input.targetMoveInput.x;
+            m_Input.targetMoveDirection = Vector3.Normalize(groundForward * m_Input.targetMoveInput.y + groundRight * m_Input.targetMoveInput.x);
 
         }
 
@@ -600,7 +600,7 @@ namespace PROJECT_A11.Develops.Common
 
                     Vector3 newVelocity = Vector3.Lerp(currVelocity, targetVelocity, Mathf.Clamp01(deltaTime * velocityUpdatingSpeed));
 
-                    pawn.rigidbody.AddForce(pawn.rigidbody.mass * (newVelocity - currVelocity) / deltaTime);
+                    pawn.rigidbody.AddForce(pawn.rigidbody.mass * ((newVelocity - currVelocity) / deltaTime - movementSettings.gravity));
 
 
 
@@ -619,7 +619,10 @@ namespace PROJECT_A11.Develops.Common
 
 
                 /// Strafes
-                if (input.targetInAirMovementMode == InAirMovementMode.Strafing)
+                if (
+                    input.targetInAirMovementMode == InAirMovementMode.Strafing
+                    && m_CurrentMovement.environment == Environment.InAir
+                )
                 {
 
                     Vector3 currVelocity = m_CurrentMovement.velocity;

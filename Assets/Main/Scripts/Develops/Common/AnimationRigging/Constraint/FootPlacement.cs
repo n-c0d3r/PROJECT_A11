@@ -315,6 +315,9 @@ namespace PROJECT_A11.Develops.Common
         [ReadOnly]
         [SyncSceneToStream]
         public Quaternion rotationOffset;
+        [ReadOnly]
+        [SyncSceneToStream]
+        public float heightOffset;
 
 
 
@@ -347,6 +350,7 @@ namespace PROJECT_A11.Develops.Common
 
             preIKUpdatingSpeed = 1.0f;
             ikUpdatingSpeed = 1.0f;
+            heightOffset = 0.0f;
 
 
 
@@ -397,6 +401,10 @@ namespace PROJECT_A11.Develops.Common
 
 
 
+        public FloatProperty heightOffsetProperty;
+
+
+
         public void ProcessRootMotion(AnimationStream stream)
         { }
 
@@ -411,6 +419,8 @@ namespace PROJECT_A11.Develops.Common
 
             float preIKUpdatingSpeed = preIKUpdatingSpeedProperty.Get(stream);
             float ikUpdatingSpeed = ikUpdatingSpeedProperty.Get(stream);
+
+            float heightOffset = heightOffsetProperty.Get(stream);
 
 
 
@@ -436,14 +446,15 @@ namespace PROJECT_A11.Develops.Common
             Vector3 preIKGroundNormal = preIKGroundRotation * Vector3.up;
 
 
-            Vector3 nextPosition = nextPositionProperty.Get(stream);
+
             Vector3 nextNormal = nextNormalProperty.Get(stream);
+            Vector3 nextPosition = nextPositionProperty.Get(stream);
 
             Quaternion nextRotation = Quaternion.FromToRotation(preIKGroundNormal, nextNormal) * preIKFootRotation;
 
 
 
-            Vector3 targetIKFootPosition = Vector3.Lerp(preIKFootPosition, nextPosition, jobWeight.Get(stream));
+            Vector3 targetIKFootPosition = Vector3.Lerp(preIKFootPosition, nextPosition, jobWeight.Get(stream)) + nextNormal * heightOffset;
             Quaternion targetIKFootRotation = Quaternion.Lerp(preIKFootRotation, nextRotation, jobWeight.Get(stream));
 
             Vector3 currIKFootPosition = ikFoot.GetPosition(stream);
@@ -493,6 +504,10 @@ namespace PROJECT_A11.Develops.Common
 
                 preIKUpdatingSpeedProperty = FloatProperty.Bind(animator, component, "m_Data." + nameof(data.preIKUpdatingSpeed)),
                 ikUpdatingSpeedProperty = FloatProperty.Bind(animator, component, "m_Data." + nameof(data.ikUpdatingSpeed)),
+
+
+
+                heightOffsetProperty = FloatProperty.Bind(animator, component, "m_Data." + nameof(data.heightOffset)),
 
             };
 

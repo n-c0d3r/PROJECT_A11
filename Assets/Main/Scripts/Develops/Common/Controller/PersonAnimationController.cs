@@ -22,8 +22,8 @@ namespace PROJECT_A11.Develops.Common
 
         #region Fields and Private Properties
         public float moveInputUpdatingSpeed = 5.0f;
-        public float animationSpeedUpdatingSpeed = 8.0f;
-        public float maxAnimatorSpeed = 1.5f;
+        public float groundedMovingSpeedUpdatingSpeed = 8.0f;
+        public float maxGroundedMovingAnimationSpeed = 1.5f;
         public float groundHeightUpdatingSpeed = 8.0f;
         public float groundHeightOfHighestFalling = 2.0f;
         public float groundHeightOfHighestFootPlacement = 0.1f;
@@ -60,6 +60,15 @@ namespace PROJECT_A11.Develops.Common
         public float footLPlacementMaxLegLengthCorrectionDistance = 0.36f;
         public float footRPlacementMaxLegLengthCorrectionDistance = 0.36f;
 
+        public float footLTurnableAngle = 30.0f;
+        public float footRTurnableAngle = 45.0f;
+        public float footLTurningHeight = 0.15f;
+        public float footRTurningHeight = 0.15f;
+        public float footTurningSpeed = 1.0f;
+
+        public AnimationCurve footLTurningCurve;
+        public AnimationCurve footRTurningCurve;
+
 
 
         [Space(10)]
@@ -69,12 +78,28 @@ namespace PROJECT_A11.Develops.Common
         private Vector3 m_MoveInput = Vector3.zero;
         [ReadOnly]
         [SerializeField]
-        private float m_AnimationSpeed = 1.0f;
+        private Vector3 m_LastPlanarLook = Vector3.forward;
+        [ReadOnly]
+        [SerializeField]
+        private float m_GroundedMovingAnimationSpeed = 1.0f;
 
         [ReadOnly]
         [SerializeField]
         [SyncSceneToStream]
         private float m_GroundHeight = 0.0f;
+
+        [ReadOnly]
+        [SerializeField]
+        private float m_FootLTurningWeight = 0.0f;
+        [ReadOnly]
+        [SerializeField]
+        private float m_FootRTurningWeight = 0.0f;
+        [ReadOnly]
+        [SerializeField]
+        private float m_FootTurningCurveChangingDir = 0.0f;
+        [ReadOnly]
+        [SerializeField]
+        private float m_FootTurningCurveCurrentTime = 0.0f;
 
         private TwoBoneIKConstraint m_HandRRig2BoneIKConstraint;
         private MultiRotationConstraint m_HandRRigRotationConstraint;
@@ -115,25 +140,81 @@ namespace PROJECT_A11.Develops.Common
 
 
 
-            Vector3 currentPlanarVel = pawn.rigidbody.velocity;
+            Vector3 currentPlanarVel = controller.VectorToMovementSpace(pawn.rigidbody.velocity);
             currentPlanarVel.y = 0.0f;
+            currentPlanarVel = controller.movementSpaceToWorldSpaceMatrix * currentPlanarVel;
 
             float currentSpeed = currentPlanarVel.magnitude;
 
 
 
+
             bool isMoving = (currentSpeed >= 1.0f) || (controller.input.targetGroundedMovementMode != PersonController.GroundedMovementMode.None);
+
+
+
+            m_FootTurningCurveCurrentTime = Mathf.Clamp01(m_FootTurningCurveCurrentTime + m_FootTurningCurveChangingDir * footTurningSpeed * deltaTime);
+
+            if (
+                (animator.GetBool("IsMoving") && (!isMoving))
+                || isMoving
+            )
+            {
+
+                m_LastPlanarLook = transform.forward;
+
+            }
+            else
+            {
+
+                if (
+                    Vector3.Dot(m_LastPlanarLook, transform.forward) <= Mathf.Cos(footRTurnableAngle * Mathf.Deg2Rad)
+                    && Vector3.Dot(m_LastPlanarLook, transform.right) <= 0.0f
+                )
+                {
+
+                    m_FootTurningCurveChangingDir = 1.0f;
+                    m_FootTurningCurveCurrentTime = 0.0f;
+
+                    m_FootLTurningWeight = 0.0f;
+                    m_FootRTurningWeight = 0.0f;
+
+                    m_LastPlanarLook = transform.forward;
+
+                }
+
+
+
+                if (
+                    Vector3.Dot(m_LastPlanarLook, transform.forward) <= Mathf.Cos(footLTurnableAngle * Mathf.Deg2Rad)
+                    && Vector3.Dot(m_LastPlanarLook, transform.right) > 0.0f
+                )
+                {
+
+                    m_FootTurningCurveChangingDir = -1.0f;
+                    m_FootTurningCurveCurrentTime = 1.0f;
+
+                    m_FootLTurningWeight = 0.0f;
+                    m_FootRTurningWeight = 0.0f;
+
+                    m_LastPlanarLook = transform.forward;
+
+                }
+
+            }
+
+
 
             animator.SetBool(
                 "IsMoving",
                 isMoving
-            );
+            ); 
 
 
             
             float groundedSpeed = animator.GetFloat("GroundedSpeed");
 
-            float targetSpeed = animator.speed;
+            float targetSpeed = m_GroundedMovingAnimationSpeed;
 
             if (currentSpeed <= 0.5f || groundedSpeed <= 0.5f)
             {
@@ -148,18 +229,22 @@ namespace PROJECT_A11.Develops.Common
 
             }
 
-            m_AnimationSpeed = Mathf.Clamp(Mathf.Lerp(m_AnimationSpeed, targetSpeed, Mathf.Clamp01(deltaTime * animationSpeedUpdatingSpeed)), 0.0f, maxAnimatorSpeed);
 
-            animator.speed = m_AnimationSpeed;
+            if(isMoving)
+            {
+
+                m_GroundedMovingAnimationSpeed = Mathf.Clamp(Mathf.Lerp(m_GroundedMovingAnimationSpeed, targetSpeed, Mathf.Clamp01(deltaTime * groundedMovingSpeedUpdatingSpeed)), 0.0f, maxGroundedMovingAnimationSpeed);
+
+            }
+
+            m_Animator.SetFloat("GroundedMovingAnimationSpeed", m_GroundedMovingAnimationSpeed);
 
         }
 
         private void UpdateInAirMovement(float deltaTime)
         {
 
-            m_AnimationSpeed = Mathf.Clamp(Mathf.Lerp(m_AnimationSpeed, 1.0f, Mathf.Clamp01(deltaTime * animationSpeedUpdatingSpeed)), 0.0f, maxAnimatorSpeed);
 
-            animator.speed = m_AnimationSpeed;
         }
 
         private void UpdateBodyState(float deltaTime)
@@ -231,6 +316,13 @@ namespace PROJECT_A11.Develops.Common
             
             float heightBasedWeight = 1.0f - Mathf.Clamp01(m_GroundHeight / groundHeightOfHighestFootPlacement);
 
+
+
+            m_FootLTurningWeight = Mathf.Clamp01(footLTurningCurve.Evaluate(m_FootTurningCurveCurrentTime));
+            m_FootRTurningWeight = Mathf.Clamp01(footRTurningCurve.Evaluate(m_FootTurningCurveCurrentTime));
+
+
+
             if (m_FootPlacementL)
             {
 
@@ -251,7 +343,9 @@ namespace PROJECT_A11.Develops.Common
 
                 m_FootPlacementL.data.rotationOffset = footRotationOffset;
 
-                m_FootPlacementL.data.preIKUpdatingSpeed = Mathf.Lerp(footLPlacementMinPreIKUpdatingSpeed, footLPlacementMaxPreIKUpdatingSpeed, (1.0f - lockWeight));
+                m_FootPlacementL.data.heightOffset = footLTurningHeight * m_FootLTurningWeight;
+
+                m_FootPlacementL.data.preIKUpdatingSpeed = Mathf.Lerp(footLPlacementMinPreIKUpdatingSpeed, footLPlacementMaxPreIKUpdatingSpeed, (1.0f - lockWeight * (1 - m_FootLTurningWeight)));
                 m_FootPlacementL.data.ikUpdatingSpeed = Mathf.Lerp(footLPlacementMinIKUpdatingSpeed, footLPlacementMaxIKUpdatingSpeed, heightBasedWeight);
                 m_FootPlacementL.data.maxLegLengthCorrectionDistance = Mathf.Lerp(0.0f, footLPlacementMaxLegLengthCorrectionDistance, heightBasedWeight);
                 m_FootPlacementL.data.groundStrength = Mathf.Lerp(0.0f, 1.0f, heightBasedWeight);
@@ -281,7 +375,9 @@ namespace PROJECT_A11.Develops.Common
 
                 m_FootPlacementR.data.rotationOffset = footRotationOffset;
 
-                m_FootPlacementR.data.preIKUpdatingSpeed = Mathf.Lerp(footRPlacementMinPreIKUpdatingSpeed, footRPlacementMaxPreIKUpdatingSpeed, (1.0f - lockWeight));
+                m_FootPlacementR.data.heightOffset = footRTurningHeight * m_FootRTurningWeight;
+
+                m_FootPlacementR.data.preIKUpdatingSpeed = Mathf.Lerp(footRPlacementMinPreIKUpdatingSpeed, footRPlacementMaxPreIKUpdatingSpeed, (1.0f - lockWeight * (1 - m_FootRTurningWeight)));
                 m_FootPlacementR.data.ikUpdatingSpeed = Mathf.Lerp(footRPlacementMinIKUpdatingSpeed, footRPlacementMaxIKUpdatingSpeed, heightBasedWeight);
                 m_FootPlacementR.data.maxLegLengthCorrectionDistance = Mathf.Lerp(0.0f, footRPlacementMaxLegLengthCorrectionDistance, heightBasedWeight);
                 m_FootPlacementR.data.groundStrength = Mathf.Lerp(0.0f, 1.0f, heightBasedWeight);
@@ -368,6 +464,10 @@ namespace PROJECT_A11.Develops.Common
 
 
 
+            m_LastPlanarLook = transform.forward;
+
+
+
             UpdateHandRigs();
             UpdateFootRigs();
 
@@ -377,6 +477,9 @@ namespace PROJECT_A11.Develops.Common
         {
 
             base.Update();
+
+            m_Animator.SetFloat("TurnR", m_Animator.GetFloat("TurnR") + Time.deltaTime);
+            m_Animator.SetFloat("TurnL", m_Animator.GetFloat("TurnL") + Time.deltaTime);
 
 
 
