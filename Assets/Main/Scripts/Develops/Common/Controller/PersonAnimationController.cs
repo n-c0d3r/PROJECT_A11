@@ -33,6 +33,8 @@ namespace PROJECT_A11.Develops.Common
         public Transform boneHip;
         public Transform boneFootL;
         public Transform boneFootR;
+        public Transform boneToeBaseL;
+        public Transform boneToeBaseR;
 
         [Space(10)]
         [Header("Physical IK Settings")]
@@ -226,8 +228,7 @@ namespace PROJECT_A11.Develops.Common
         }
         private void UpdateFootRigs()
         {
-
-            //float heightBasedWeight = ((controller.currentMovement.environment == PersonController.Environment.Grounded) ? 1.0f : 0.0f);
+            
             float heightBasedWeight = 1.0f - Mathf.Clamp01(m_GroundHeight / groundHeightOfHighestFootPlacement);
 
             if (m_FootPlacementL)
@@ -236,8 +237,19 @@ namespace PROJECT_A11.Develops.Common
                 float lockWeight = m_Animator.GetFloat("LockFootL");
                 lockWeight *= heightBasedWeight;
 
+                float footHeight = m_Animator.GetFloat("FootHeightL");
+
+                float footRotationOffsetX = m_Animator.GetFloat("FootRotationOffsetL.x");
+                float footRotationOffsetY = m_Animator.GetFloat("FootRotationOffsetL.y");
+                float footRotationOffsetZ = m_Animator.GetFloat("FootRotationOffsetL.z");
+                float footRotationOffsetW = m_Animator.GetFloat("FootRotationOffsetL.w");
+
+                Quaternion footRotationOffset = new Quaternion(footRotationOffsetX, footRotationOffsetY, footRotationOffsetZ, footRotationOffsetW);
+
                 m_FootPlacementL.weight = lockWeight;
                 m_FootLRig2BoneIKConstraint.weight = lockWeight;
+
+                m_FootPlacementL.data.rotationOffset = footRotationOffset;
 
                 m_FootPlacementL.data.preIKUpdatingSpeed = Mathf.Lerp(footLPlacementMinPreIKUpdatingSpeed, footLPlacementMaxPreIKUpdatingSpeed, (1.0f - lockWeight));
                 m_FootPlacementL.data.ikUpdatingSpeed = Mathf.Lerp(footLPlacementMinIKUpdatingSpeed, footLPlacementMaxIKUpdatingSpeed, heightBasedWeight);
@@ -246,6 +258,8 @@ namespace PROJECT_A11.Develops.Common
 
                 m_FootPlacementL.data.checkingDirection = -pawn.controller.groundChecker.checkedNormal;
 
+                m_FootPlacementL.data.footHeight = footHeight;
+
             }
             if (m_FootPlacementR)
             {
@@ -253,8 +267,19 @@ namespace PROJECT_A11.Develops.Common
                 float lockWeight = m_Animator.GetFloat("LockFootR");
                 lockWeight *= heightBasedWeight;
 
+                float footHeight = m_Animator.GetFloat("FootHeightR");
+
+                float footRotationOffsetX = m_Animator.GetFloat("FootRotationOffsetR.x");
+                float footRotationOffsetY = m_Animator.GetFloat("FootRotationOffsetR.y");
+                float footRotationOffsetZ = m_Animator.GetFloat("FootRotationOffsetR.z");
+                float footRotationOffsetW = m_Animator.GetFloat("FootRotationOffsetR.w");
+
+                Quaternion footRotationOffset = new Quaternion(footRotationOffsetX, footRotationOffsetY, footRotationOffsetZ, footRotationOffsetW);
+
                 m_FootPlacementR.weight = lockWeight;
                 m_FootRRig2BoneIKConstraint.weight = lockWeight;
+
+                m_FootPlacementR.data.rotationOffset = footRotationOffset;
 
                 m_FootPlacementR.data.preIKUpdatingSpeed = Mathf.Lerp(footRPlacementMinPreIKUpdatingSpeed, footRPlacementMaxPreIKUpdatingSpeed, (1.0f - lockWeight));
                 m_FootPlacementR.data.ikUpdatingSpeed = Mathf.Lerp(footRPlacementMinIKUpdatingSpeed, footRPlacementMaxIKUpdatingSpeed, heightBasedWeight);
@@ -262,6 +287,8 @@ namespace PROJECT_A11.Develops.Common
                 m_FootPlacementR.data.groundStrength = Mathf.Lerp(0.0f, 1.0f, heightBasedWeight);
 
                 m_FootPlacementR.data.checkingDirection = -pawn.controller.groundChecker.checkedNormal;
+
+                m_FootPlacementR.data.footHeight = footHeight;
 
             }
 

@@ -151,6 +151,13 @@ namespace PROJECT_A11.Develops.Common
 
         }
 
+        private void Update()
+        {
+
+            m_Data.rotationV4Offset = new Vector4(m_Data.rotationOffset.x, m_Data.rotationOffset.y, m_Data.rotationOffset.z, m_Data.rotationOffset.w);
+
+        }
+
         protected override void OnValidate()
         {
             base.OnValidate();
@@ -234,14 +241,10 @@ namespace PROJECT_A11.Develops.Common
 
         public float checkingHeightOffset;
         public float checkingDistance;
-        public Vector3 checkingDirection;
-        public float footHeight;
         public LayerMask groundMask;
 
         [Range(0.0f, 1.0f)]
         public float minGroundSlope;
-
-        public Quaternion rotationOffset;
 
 
 
@@ -303,6 +306,15 @@ namespace PROJECT_A11.Develops.Common
         [ReadOnly]
         [SyncSceneToStream]
         public float ikUpdatingSpeed;
+        [ReadOnly]
+        [SyncSceneToStream]
+        public Vector3 checkingDirection;
+        [ReadOnly]
+        [SyncSceneToStream]
+        public float footHeight;
+        [ReadOnly]
+        [SyncSceneToStream]
+        public Quaternion rotationOffset;
 
 
 
@@ -419,23 +431,15 @@ namespace PROJECT_A11.Develops.Common
             Quaternion rotationOffset = new Quaternion(rotationV4Offset.x, rotationV4Offset.y, rotationV4Offset.z, rotationV4Offset.w);
             Quaternion rotationOffsetInv = Quaternion.Inverse(rotationOffset);
 
-            Quaternion preIKGroundRotation = preIKFootRotation * rotationOffset;
+            Quaternion preIKGroundRotation = preIKFootRotation * rotationOffsetInv;
 
-            Vector3 preIKFootGroundTangent = preIKGroundRotation * Vector3.forward;
-            Vector3 preIKFootGroundBiTangent = preIKGroundRotation * Vector3.right;
             Vector3 preIKGroundNormal = preIKGroundRotation * Vector3.up;
 
 
             Vector3 nextPosition = nextPositionProperty.Get(stream);
             Vector3 nextNormal = nextNormalProperty.Get(stream);
 
-            Vector3 nextTangent = Vector3.Cross(preIKFootGroundBiTangent, nextNormal);
-            Vector3 nextBiTangent = Vector3.Cross(nextNormal, preIKFootGroundTangent);
-
-            Quaternion nextRotation = (
-                Quaternion.FromToRotation(preIKFootGroundTangent, nextTangent) *
-                Quaternion.FromToRotation(preIKFootGroundBiTangent, nextBiTangent)
-            ) * preIKFootRotation;
+            Quaternion nextRotation = Quaternion.FromToRotation(preIKGroundNormal, nextNormal) * preIKFootRotation;
 
 
 
@@ -445,9 +449,7 @@ namespace PROJECT_A11.Develops.Common
             Vector3 currIKFootPosition = ikFoot.GetPosition(stream);
             Quaternion currIKFootRotation = ikFoot.GetRotation(stream);
 
-            //ikFoot.SetPosition(stream, targetIKFootPosition);
             ikFoot.SetPosition(stream, Vector3.Lerp(currIKFootPosition, targetIKFootPosition, Mathf.Clamp01(stream.deltaTime * ikUpdatingSpeed)));
-            //ikFoot.SetRotation(stream, targetIKFootRotation);
             ikFoot.SetRotation(stream, Quaternion.Lerp(currIKFootRotation, targetIKFootRotation, Mathf.Clamp01(stream.deltaTime * ikUpdatingSpeed)));
 
         }

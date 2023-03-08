@@ -26,14 +26,25 @@ namespace PROJECT_A11.Develops.Common
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         #region Fields
-        [SerializeField]
         public string curvePath = "";
-        [SerializeField]
-        public string curveLProperty = "LockFootL";
-        public string curveRProperty = "LockFootR";
-        [SerializeField]
+
+        public string lockCurveLProperty = "LockFootL";
+        public string lockCurveRProperty = "LockFootR";
+
+        public string footHeightLProperty = "FootHeightL";
+        public string footHeightRProperty = "FootHeightR";
+
+        public string footRotOffsetLXProperty = "FootRotationOffsetL.x";
+        public string footRotOffsetLYProperty = "FootRotationOffsetL.y";
+        public string footRotOffsetLZProperty = "FootRotationOffsetL.z";
+        public string footRotOffsetLWProperty = "FootRotationOffsetL.w";
+
+        public string footRotOffsetRXProperty = "FootRotationOffsetR.x";
+        public string footRotOffsetRYProperty = "FootRotationOffsetR.y";
+        public string footRotOffsetRZProperty = "FootRotationOffsetR.z";
+        public string footRotOffsetRWProperty = "FootRotationOffsetR.w";
+
         public Type curveType = typeof(Animator);
-        [SerializeField]
         public float framesPerSecond = 30.0f;
         [SerializeField]
         public Person personPrefab;
@@ -62,6 +73,7 @@ namespace PROJECT_A11.Develops.Common
 
             Person testingPerson = Instantiate(personPrefab);
             testingPerson.transform.position = Vector3.zero;
+            testingPerson.transform.rotation = Quaternion.identity;
             var animator = testingPerson.GetComponent<Animator>();
             animator.runtimeAnimatorController = animatorController;
             var personAnimationController = testingPerson.GetComponent<PersonAnimationController>();
@@ -70,8 +82,21 @@ namespace PROJECT_A11.Develops.Common
 
             int frameCount = (int)(inputClip.length * framesPerSecond);
 
-            Keyframe[] keyframesL = new Keyframe[frameCount];
-            Keyframe[] keyframesR = new Keyframe[frameCount];
+            Keyframe[] keyframesLockCurveL = new Keyframe[frameCount];
+            Keyframe[] keyframesLockCurveR = new Keyframe[frameCount];
+
+            Keyframe[] keyframesFootHeightL = new Keyframe[frameCount];
+            Keyframe[] keyframesFootHeightR = new Keyframe[frameCount];
+
+            Keyframe[] keyframesfootRotOffsetLX = new Keyframe[frameCount];
+            Keyframe[] keyframesfootRotOffsetLY = new Keyframe[frameCount];
+            Keyframe[] keyframesfootRotOffsetLZ = new Keyframe[frameCount];
+            Keyframe[] keyframesfootRotOffsetLW = new Keyframe[frameCount];
+
+            Keyframe[] keyframesfootRotOffsetRX = new Keyframe[frameCount];
+            Keyframe[] keyframesfootRotOffsetRY = new Keyframe[frameCount];
+            Keyframe[] keyframesfootRotOffsetRZ = new Keyframe[frameCount];
+            Keyframe[] keyframesfootRotOffsetRW = new Keyframe[frameCount];
 
             FootPlacement footPlacementL = personAnimationController.footLRig.GetComponent<FootPlacement>();
             FootPlacement footPlacementR = personAnimationController.footRRig.GetComponent<FootPlacement>();
@@ -91,10 +116,14 @@ namespace PROJECT_A11.Develops.Common
 
                 AnimationMode.SampleAnimationClip(testingPerson.gameObject, inputClip, 0);
 
-                float minHeightL = Mathf.Infinity;
-                float minHeightR = Mathf.Infinity;
-                float maxHeightL = 0.0f;
-                float maxHeightR = 0.0f;
+
+
+                float maxSpeedL = 0.0f;
+                float maxSpeedR = 0.0f;
+
+                float toeBaseHeight = Mathf.Infinity;
+
+
 
                 for (int i = 0; i < frameCount; ++i)
                 {
@@ -102,68 +131,128 @@ namespace PROJECT_A11.Develops.Common
                     float time = i * inputClip.length / (float)frameCount;
                     float dt = inputClip.length / (float)frameCount;
 
+
+
                     AnimationMode.SampleAnimationClip(testingPerson.gameObject, inputClip, time);
 
-                    Vector3 footLPos = personAnimationController.boneFootL.position - Vector3.up * footPlacementL.data.footHeight;
-                    Vector3 footRPos = personAnimationController.boneFootR.position - Vector3.up * footPlacementL.data.footHeight;
+                    Vector3 footLPos1 = personAnimationController.boneFootL.position;
+                    Vector3 footRPos1 = personAnimationController.boneFootR.position;
 
-                    float valueL = footLPos.y;
-                    float valueR = footRPos.y;
+                    toeBaseHeight = Mathf.Min(toeBaseHeight, personAnimationController.boneToeBaseL.position.y);
+                    toeBaseHeight = Mathf.Min(toeBaseHeight, personAnimationController.boneToeBaseR.position.y);
 
-                    if (minHeightL > valueL)
-                        minHeightL = valueL;
-                    if (minHeightR > valueR)
-                        minHeightR = valueR;
 
-                    if (maxHeightL < valueL)
-                        maxHeightL = valueL;
-                    if (maxHeightR < valueR)
-                        maxHeightR = valueR;
 
-                    keyframesL[i] = new Keyframe(time, valueL);
-                    keyframesR[i] = new Keyframe(time, valueR);
+                    float footHeightL = Mathf.Clamp(personAnimationController.boneFootL.position.y - personAnimationController.boneToeBaseL.position.y, 0.0f, Mathf.Infinity);
+                    keyframesFootHeightL[i] = new Keyframe(time, footHeightL);
+
+                    float footHeightR = Mathf.Clamp(personAnimationController.boneFootR.position.y - personAnimationController.boneToeBaseR.position.y, 0.0f, Mathf.Infinity);
+                    keyframesFootHeightR[i] = new Keyframe(time, footHeightR);
+
+
+
+                    keyframesfootRotOffsetLX[i] = new Keyframe(time, personAnimationController.boneFootL.rotation.x);
+                    keyframesfootRotOffsetLY[i] = new Keyframe(time, personAnimationController.boneFootL.rotation.y);
+                    keyframesfootRotOffsetLZ[i] = new Keyframe(time, personAnimationController.boneFootL.rotation.z);
+                    keyframesfootRotOffsetLW[i] = new Keyframe(time, personAnimationController.boneFootL.rotation.w);
+
+                    keyframesfootRotOffsetRX[i] = new Keyframe(time, personAnimationController.boneFootR.rotation.x);
+                    keyframesfootRotOffsetRY[i] = new Keyframe(time, personAnimationController.boneFootR.rotation.y);
+                    keyframesfootRotOffsetRZ[i] = new Keyframe(time, personAnimationController.boneFootR.rotation.z);
+                    keyframesfootRotOffsetRW[i] = new Keyframe(time, personAnimationController.boneFootR.rotation.w);
+
+
+
+                    AnimationMode.SampleAnimationClip(testingPerson.gameObject, inputClip, time + dt);
+
+                    Vector3 footLPos2 = personAnimationController.boneFootL.position;
+                    Vector3 footRPos2 = personAnimationController.boneFootR.position;
+
+
+
+                    float speedL = (footLPos2 - footLPos1).magnitude / dt;
+                    float speedR = (footRPos2 - footRPos1).magnitude / dt;
+
+                    if(maxSpeedL < speedL)
+                    {
+
+                        maxSpeedL = speedL;
+
+                    }
+                    if (maxSpeedR < speedR)
+                    {
+
+                        maxSpeedR = speedR;
+
+                    }
+
+                    keyframesLockCurveL[i] = new Keyframe(time, speedL);
+                    keyframesLockCurveR[i] = new Keyframe(time, speedR);
 
                 }
 
-                float P = 0.8f;
 
-                if(minHeightL > 0.0f)
+
+                if (maxSpeedL >= 0.1f)
+                {
+
                     for (int i = 0; i < frameCount; ++i)
                     {
 
-                        keyframesL[i].value = 1.0f - Mathf.Clamp01((keyframesL[i].value - minHeightL) / Mathf.Clamp(maxHeightL - minHeightL, 0.001f, Mathf.Infinity));
-                        if (keyframesL[i].value > 0.5f)
-                            keyframesL[i].value = Mathf.Pow(2.0f * keyframesL[i].value, P) * Mathf.Pow(0.5f, P);
-                        else
-                            keyframesL[i].value = Mathf.Pow(2.0f * keyframesL[i].value, 1.0f / P) * Mathf.Pow(0.5f, 1.0f / P);
+                        keyframesLockCurveL[i].value = 1.0f - Mathf.Clamp01(keyframesLockCurveL[i].value / maxSpeedL);
 
                     }
+
+                }
                 else
+                {
+
                     for (int i = 0; i < frameCount; ++i)
                     {
 
-                        keyframesL[i].value = 1.0f + 0.005f * (i % 2);
+                        keyframesLockCurveL[i].value = 1.0f + 0.001f * (i % 2);
 
                     }
 
-                if (minHeightL > 0.0f)
+                }
+
+                if (maxSpeedR >= 0.1f)
+                {
+
                     for (int i = 0; i < frameCount; ++i)
                     {
 
-                        keyframesR[i].value = 1.0f - Mathf.Clamp01((keyframesR[i].value - minHeightR) / Mathf.Clamp(maxHeightR - minHeightL, 0.001f, Mathf.Infinity));
-                        if (keyframesR[i].value > 0.5f)
-                            keyframesR[i].value = Mathf.Pow(2.0f * keyframesR[i].value, P) * Mathf.Pow(0.5f, P);
-                        else
-                            keyframesR[i].value = Mathf.Pow(2.0f * keyframesR[i].value, 1.0f / P) * Mathf.Pow(0.5f, 1.0f / P);
+                        keyframesLockCurveR[i].value = 1.0f - Mathf.Clamp01(keyframesLockCurveR[i].value / maxSpeedR);
 
                     }
+
+                }
                 else
+                {
+
                     for (int i = 0; i < frameCount; ++i)
                     {
 
-                        keyframesR[i].value = 1.0f + 0.005f * (i % 2);
+                        keyframesLockCurveR[i].value = 1.0f + 0.001f * (i % 2);
 
                     }
+
+                }
+
+
+
+                for (int i = 0; i < frameCount; ++i)
+                {
+
+                    keyframesFootHeightL[i].value += toeBaseHeight;
+
+                }
+                for (int i = 0; i < frameCount; ++i)
+                {
+
+                    keyframesFootHeightR[i].value += toeBaseHeight;
+
+                }
 
             }
             catch
@@ -185,19 +274,88 @@ namespace PROJECT_A11.Develops.Common
 
 
 
-            AnimationCurve curveL = new AnimationCurve(keyframesL);
-            AnimationCurve curveR = new AnimationCurve(keyframesR);
-
+            AnimationCurve lockCurveL = new AnimationCurve(keyframesLockCurveL);
+            AnimationCurve lockCurveR = new AnimationCurve(keyframesLockCurveR);
 
             AnimationUtility.SetEditorCurve(
                 outputClip,
-                EditorCurveBinding.FloatCurve(curvePath, curveType, curveLProperty),
-                curveL
+                EditorCurveBinding.FloatCurve(curvePath, curveType, lockCurveLProperty),
+                lockCurveL
             );
             AnimationUtility.SetEditorCurve(
                 outputClip,
-                EditorCurveBinding.FloatCurve(curvePath, curveType, curveRProperty),
-                curveR
+                EditorCurveBinding.FloatCurve(curvePath, curveType, lockCurveRProperty),
+                lockCurveR
+            );
+
+
+
+            AnimationCurve footHeightCurveL = new AnimationCurve(keyframesFootHeightL);
+            AnimationCurve footHeightCurveR = new AnimationCurve(keyframesFootHeightR);
+
+            AnimationUtility.SetEditorCurve(
+                outputClip,
+                EditorCurveBinding.FloatCurve(curvePath, curveType, footHeightLProperty),
+                footHeightCurveL
+            );
+            AnimationUtility.SetEditorCurve(
+                outputClip,
+                EditorCurveBinding.FloatCurve(curvePath, curveType, footHeightRProperty),
+                footHeightCurveR
+            );
+
+
+
+            AnimationCurve footRotOffsetCurveLX = new AnimationCurve(keyframesfootRotOffsetLX);
+            AnimationCurve footRotOffsetCurveLY = new AnimationCurve(keyframesfootRotOffsetLY);
+            AnimationCurve footRotOffsetCurveLZ = new AnimationCurve(keyframesfootRotOffsetLZ);
+            AnimationCurve footRotOffsetCurveLW = new AnimationCurve(keyframesfootRotOffsetLW);
+
+            AnimationCurve footRotOffsetCurveRX = new AnimationCurve(keyframesfootRotOffsetRX);
+            AnimationCurve footRotOffsetCurveRY = new AnimationCurve(keyframesfootRotOffsetRY);
+            AnimationCurve footRotOffsetCurveRZ = new AnimationCurve(keyframesfootRotOffsetRZ);
+            AnimationCurve footRotOffsetCurveRW = new AnimationCurve(keyframesfootRotOffsetRW);
+
+            AnimationUtility.SetEditorCurve(
+                outputClip,
+                EditorCurveBinding.FloatCurve(curvePath, curveType, footRotOffsetLXProperty),
+                footRotOffsetCurveLX
+            );
+            AnimationUtility.SetEditorCurve(
+                outputClip,
+                EditorCurveBinding.FloatCurve(curvePath, curveType, footRotOffsetLYProperty),
+                footRotOffsetCurveLY
+            );
+            AnimationUtility.SetEditorCurve(
+                outputClip,
+                EditorCurveBinding.FloatCurve(curvePath, curveType, footRotOffsetLZProperty),
+                footRotOffsetCurveLZ
+            );
+            AnimationUtility.SetEditorCurve(
+                outputClip,
+                EditorCurveBinding.FloatCurve(curvePath, curveType, footRotOffsetLWProperty),
+                footRotOffsetCurveLW
+            );
+
+            AnimationUtility.SetEditorCurve(
+                outputClip,
+                EditorCurveBinding.FloatCurve(curvePath, curveType, footRotOffsetRXProperty),
+                footRotOffsetCurveRX
+            );
+            AnimationUtility.SetEditorCurve(
+                outputClip,
+                EditorCurveBinding.FloatCurve(curvePath, curveType, footRotOffsetRYProperty),
+                footRotOffsetCurveRY
+            );
+            AnimationUtility.SetEditorCurve(
+                outputClip,
+                EditorCurveBinding.FloatCurve(curvePath, curveType, footRotOffsetRZProperty),
+                footRotOffsetCurveRZ
+            );
+            AnimationUtility.SetEditorCurve(
+                outputClip,
+                EditorCurveBinding.FloatCurve(curvePath, curveType, footRotOffsetRWProperty),
+                footRotOffsetCurveRW
             );
 
         }

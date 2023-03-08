@@ -1169,8 +1169,6 @@ MonoBehaviour:
     maxLegLength: 0.8
     checkingHeightOffset: 0.35
     checkingDistance: 1.4
-    checkingDirection: {x: 0, y: -1, z: 0}
-    footHeight: 0.084
     groundMask:
       serializedVersion: 2
       m_Bits: 64
@@ -1197,6 +1195,8 @@ MonoBehaviour:
     maxLegLengthCorrectionDistance: 0.36
     preIKUpdatingSpeed: 0
     ikUpdatingSpeed: 0
+    checkingDirection: {x: 0, y: -1, z: 0}
+    footHeight: 0.084
 --- !u!114 &3915620243744360588
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3402,8 +3402,6 @@ MonoBehaviour:
     maxLegLength: 0.8
     checkingHeightOffset: 0.35
     checkingDistance: 1.4
-    checkingDirection: {x: 0, y: -1, z: 0}
-    footHeight: 0.084
     groundMask:
       serializedVersion: 2
       m_Bits: 64
@@ -3430,6 +3428,8 @@ MonoBehaviour:
     maxLegLengthCorrectionDistance: 0.36
     preIKUpdatingSpeed: 0
     ikUpdatingSpeed: 0
+    checkingDirection: {x: 0, y: -1, z: 0}
+    footHeight: 0.084
 --- !u!114 &5633599602511903706
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4979,6 +4979,8 @@ MonoBehaviour:
   boneHip: {fileID: 6360172330601233070}
   boneFootL: {fileID: 1175309761787816801}
   boneFootR: {fileID: 6133087615747017247}
+  boneToeBaseL: {fileID: 4451329999078151749}
+  boneToeBaseR: {fileID: 6419339201937164032}
   physicalIKRoot: {fileID: 3261350050382848584}
   physicalIKFootL: {fileID: 3451654955334966706}
   physicalIKFootR: {fileID: 6946257959571056176}
@@ -4990,10 +4992,10 @@ MonoBehaviour:
   footRPlacementMinPreIKUpdatingSpeed: 0
   footLPlacementMaxPreIKUpdatingSpeed: 100
   footRPlacementMaxPreIKUpdatingSpeed: 100
-  footLPlacementMinIKUpdatingSpeed: 15
-  footRPlacementMinIKUpdatingSpeed: 15
-  footLPlacementMaxIKUpdatingSpeed: 100
-  footRPlacementMaxIKUpdatingSpeed: 100
+  footLPlacementMinIKUpdatingSpeed: 10
+  footRPlacementMinIKUpdatingSpeed: 10
+  footLPlacementMaxIKUpdatingSpeed: 75
+  footRPlacementMaxIKUpdatingSpeed: 75
   footLPlacementMaxLegLengthCorrectionDistance: 0.36
   footRPlacementMaxLegLengthCorrectionDistance: 0.36
   m_MoveInput: {x: 0, y: 0, z: 0}
