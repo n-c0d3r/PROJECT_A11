@@ -91,8 +91,10 @@ namespace PROJECT_A11.Develops.Common
 
                 AnimationMode.SampleAnimationClip(testingPerson.gameObject, inputClip, 0);
 
-                float maxheightL = 0.0f;
-                float maxheightR = 0.0f;
+                float minHeightL = Mathf.Infinity;
+                float minHeightR = Mathf.Infinity;
+                float maxHeightL = 0.0f;
+                float maxHeightR = 0.0f;
 
                 for (int i = 0; i < frameCount; ++i)
                 {
@@ -108,43 +110,58 @@ namespace PROJECT_A11.Develops.Common
                     float valueL = footLPos.y;
                     float valueR = footRPos.y;
 
-                    if (maxheightL < valueL)
-                        maxheightL = valueL;
-                    if (maxheightR < valueR)
-                        maxheightR = valueR;
+                    if (minHeightL > valueL)
+                        minHeightL = valueL;
+                    if (minHeightR > valueR)
+                        minHeightR = valueR;
+
+                    if (maxHeightL < valueL)
+                        maxHeightL = valueL;
+                    if (maxHeightR < valueR)
+                        maxHeightR = valueR;
 
                     keyframesL[i] = new Keyframe(time, valueL);
                     keyframesR[i] = new Keyframe(time, valueR);
 
                 }
 
-                if(maxheightL >= 0.01f)
+                float P = 0.8f;
+
+                if(minHeightL > 0.0f)
                     for (int i = 0; i < frameCount; ++i)
                     {
 
-                        keyframesL[i].value = 1.0f - keyframesL[i].value / maxheightL;
+                        keyframesL[i].value = 1.0f - Mathf.Clamp01((keyframesL[i].value - minHeightL) / Mathf.Clamp(maxHeightL - minHeightL, 0.001f, Mathf.Infinity));
+                        if (keyframesL[i].value > 0.5f)
+                            keyframesL[i].value = Mathf.Pow(2.0f * keyframesL[i].value, P) * Mathf.Pow(0.5f, P);
+                        else
+                            keyframesL[i].value = Mathf.Pow(2.0f * keyframesL[i].value, 1.0f / P) * Mathf.Pow(0.5f, 1.0f / P);
 
                     }
                 else
                     for (int i = 0; i < frameCount; ++i)
                     {
 
-                        keyframesL[i].value = 1.0f;
+                        keyframesL[i].value = 1.0f + 0.005f * (i % 2);
 
                     }
 
-                if (maxheightL >= 0.01f)
+                if (minHeightL > 0.0f)
                     for (int i = 0; i < frameCount; ++i)
                     {
 
-                        keyframesR[i].value = 1.0f - keyframesR[i].value / maxheightR;
+                        keyframesR[i].value = 1.0f - Mathf.Clamp01((keyframesR[i].value - minHeightR) / Mathf.Clamp(maxHeightR - minHeightL, 0.001f, Mathf.Infinity));
+                        if (keyframesR[i].value > 0.5f)
+                            keyframesR[i].value = Mathf.Pow(2.0f * keyframesR[i].value, P) * Mathf.Pow(0.5f, P);
+                        else
+                            keyframesR[i].value = Mathf.Pow(2.0f * keyframesR[i].value, 1.0f / P) * Mathf.Pow(0.5f, 1.0f / P);
 
                     }
                 else
                     for (int i = 0; i < frameCount; ++i)
                     {
 
-                        keyframesR[i].value = 1.0f;
+                        keyframesR[i].value = 1.0f + 0.005f * (i % 2);
 
                     }
 
